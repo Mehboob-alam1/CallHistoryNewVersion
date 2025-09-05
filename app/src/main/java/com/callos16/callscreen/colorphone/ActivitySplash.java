@@ -34,11 +34,34 @@ public class ActivitySplash extends BaseActivity {
 
     private void checkAdminModeAndProceed() {
         android.util.Log.d("ActivitySplash", "Starting admin mode check...");
+        
+        // LOCAL MODE TOGGLE - Change this to true/false to switch between admin and normal mode
+        boolean LOCAL_ADMIN_MODE = false; // Set to true for admin mode, false for normal mode
+        
+        if (LOCAL_ADMIN_MODE) {
+            android.util.Log.d("ActivitySplash", "Using LOCAL admin mode");
+            android.widget.Toast.makeText(this, "Admin Mode (Local)", android.widget.Toast.LENGTH_SHORT).show();
+            startAdminModule();
+            return;
+        }
+        
+        // Add timeout mechanism - if Firebase doesn't respond in 5 seconds, proceed with normal flow
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                android.util.Log.w("ActivitySplash", "Firebase timeout - proceeding with normal flow");
+                runOnUiThread(() -> {
+                    android.widget.Toast.makeText(ActivitySplash.this, "Firebase timeout - using normal mode", android.widget.Toast.LENGTH_SHORT).show();
+                    onEnd();
+                });
+            }
+        }, 5000); // 5 second timeout
+        
         AdminModeService adminModeService = new AdminModeService();
         adminModeService.checkAdminMode(new AdminModeService.AdminModeCallback() {
             @Override
             public void onAdminModeChecked(boolean isAdminModeEnabled) {
-                android.util.Log.d("ActivitySplash", "Admin mode check result: " + isAdminModeEnabled);
+                android.util.Log.d("ActivitySplash", "Firebase admin mode check result: " + isAdminModeEnabled);
                 runOnUiThread(() -> {
                     if (isAdminModeEnabled) {
                         android.util.Log.d("ActivitySplash", "Navigating to admin activity...");
@@ -57,7 +80,7 @@ public class ActivitySplash extends BaseActivity {
                 android.util.Log.e("ActivitySplash", "Error in admin mode check: " + error);
                 runOnUiThread(() -> {
                     // On error, default to normal dialer flow
-                    android.widget.Toast.makeText(ActivitySplash.this, "Error checking app mode: " + error, android.widget.Toast.LENGTH_LONG).show();
+                    android.widget.Toast.makeText(ActivitySplash.this, "Firebase error - using normal mode", android.widget.Toast.LENGTH_SHORT).show();
                     onEnd();
                 });
             }
