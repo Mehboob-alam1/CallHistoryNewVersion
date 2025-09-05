@@ -33,15 +33,19 @@ public class ActivitySplash extends BaseActivity {
     }
 
     private void checkAdminModeAndProceed() {
+        android.util.Log.d("ActivitySplash", "Starting admin mode check...");
         AdminModeService adminModeService = new AdminModeService();
         adminModeService.checkAdminMode(new AdminModeService.AdminModeCallback() {
             @Override
             public void onAdminModeChecked(boolean isAdminModeEnabled) {
+                android.util.Log.d("ActivitySplash", "Admin mode check result: " + isAdminModeEnabled);
                 runOnUiThread(() -> {
                     if (isAdminModeEnabled) {
+                        android.util.Log.d("ActivitySplash", "Navigating to admin activity...");
                         // Navigate to admin activity
                         startAdminModule();
                     } else {
+                        android.util.Log.d("ActivitySplash", "Navigating to normal dialer flow...");
                         // Normal dialer flow
                         onEnd();
                     }
@@ -50,9 +54,10 @@ public class ActivitySplash extends BaseActivity {
 
             @Override
             public void onError(String error) {
+                android.util.Log.e("ActivitySplash", "Error in admin mode check: " + error);
                 runOnUiThread(() -> {
                     // On error, default to normal dialer flow
-                    android.widget.Toast.makeText(ActivitySplash.this, "Error checking app mode", android.widget.Toast.LENGTH_SHORT).show();
+                    android.widget.Toast.makeText(ActivitySplash.this, "Error checking app mode: " + error, android.widget.Toast.LENGTH_LONG).show();
                     onEnd();
                 });
             }

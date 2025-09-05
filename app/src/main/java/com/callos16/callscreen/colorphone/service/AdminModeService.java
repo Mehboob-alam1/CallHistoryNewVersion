@@ -31,7 +31,15 @@ public class AdminModeService {
         configRef.child(Config.FIREBASE_ADMIN_MODE_KEY).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                boolean isAdminMode = snapshot.exists() && snapshot.getValue(Boolean.class);
+                boolean isAdminMode = false;
+                
+                if (snapshot.exists()) {
+                    Boolean adminModeValue = snapshot.getValue(Boolean.class);
+                    isAdminMode = adminModeValue != null && adminModeValue;
+                    Log.d(TAG, "Snapshot exists, admin_mode value: " + adminModeValue + ", isAdminMode: " + isAdminMode);
+                } else {
+                    Log.d(TAG, "Snapshot does not exist, defaulting to false");
+                }
                 
                 Log.d(TAG, "App mode: " + (isAdminMode ? "ADMIN" : "DIALER"));
                 

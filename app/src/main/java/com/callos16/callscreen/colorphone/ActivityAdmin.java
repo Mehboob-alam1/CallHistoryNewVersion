@@ -11,6 +11,8 @@ public class ActivityAdmin extends BaseActivity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         
+        android.util.Log.d("ActivityAdmin", "Admin activity created successfully!");
+        
         // Create a simple admin interface
         TextView textView = new TextView(this);
         textView.setText("Admin Mode - Welcome to Admin Panel");
@@ -18,6 +20,6 @@ public class ActivityAdmin extends BaseActivity {
         textView.setPadding(50, 50, 50, 50);
         setContentView(textView);
         
-        Toast.makeText(this, "Admin mode activated", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Admin mode activated", Toast.LENGTH_LONG).show();
     }
 }
