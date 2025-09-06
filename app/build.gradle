@@ -60,7 +60,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-database'
 
-    implementation 'com.google.android.gms:play-services-ads:21.3.0'
+    implementation 'com.google.android.gms:play-services-ads:22.6.0'
 
     // Cashfree SDK - Re-enabled for Web Checkout
     implementation("com.cashfree.pg:api:2.2.8")
