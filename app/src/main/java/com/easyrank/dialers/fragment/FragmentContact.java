@@ -29,7 +29,11 @@ import com.easyrank.dialers.utils.MyShare;
 import com.easyrank.dialers.utils.OtherUtils;
 import com.easyrank.dialers.utils.ReadContact;
 import com.easyrank.dialers.utils.SimUtils;
-
+import com.easyrank.dialers.ads.AdManager;
+import com.easyrank.dialers.ads.BannerAdManager;
+import com.easyrank.dialers.ads.NativeAdManager;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
 
 import java.util.ArrayList;
 
@@ -87,6 +91,13 @@ public class FragmentContact extends BaseFragment {
         private final boolean theme;
         private final TextW tvEmpty;
         private final ViewScrollAlphaB viewScrollAlphaB;
+        
+        // Ad Managers
+        private AdManager adManager;
+        private BannerAdManager bannerAdManager;
+        private NativeAdManager nativeAdManager;
+        private LinearLayout bannerAdContainer;
+        private LinearLayout nativeAdContainer;
 
         public ViewContact(Context context) {
             super(context);
@@ -94,6 +105,9 @@ public class FragmentContact extends BaseFragment {
             int i = widthScreen / 25;
             boolean theme = MyShare.getTheme(context);
             this.theme = theme;
+            
+            // Initialize ads
+            initAds(context);
             ImageView imageView = new ImageView(context);
             imageView.setId(1111);
             imageView.setImageResource(R.drawable.ic_add_contact);
@@ -187,6 +201,69 @@ public class FragmentContact extends BaseFragment {
             if (locationAlphaB != -1) {
                 recyclerView.scrollToPosition(locationAlphaB);
             }
+        }
+
+        private void initAds(Context context) {
+            // Initialize AdMob
+            adManager = AdManager.getInstance(context);
+            adManager.initialize();
+            
+            // Create ad containers
+            nativeAdContainer = new LinearLayout(context);
+            nativeAdContainer.setOrientation(LinearLayout.VERTICAL);
+            nativeAdContainer.setVisibility(View.GONE);
+            
+            bannerAdContainer = new LinearLayout(context);
+            bannerAdContainer.setOrientation(LinearLayout.VERTICAL);
+            bannerAdContainer.setVisibility(View.GONE);
+            
+            // Add native ad container at the top
+            LayoutParams nativeParams = new LayoutParams(-1, -2);
+            nativeParams.addRule(10); // ALIGN_PARENT_TOP
+            addView(nativeAdContainer, nativeParams);
+            
+            // Add banner ad container at the bottom
+            LayoutParams bannerParams = new LayoutParams(-1, -2);
+            bannerParams.addRule(12); // ALIGN_PARENT_BOTTOM
+            addView(bannerAdContainer, bannerParams);
+            
+            // Setup Banner Ad
+            bannerAdManager = new BannerAdManager(context);
+            bannerAdManager.createBannerAd(bannerAdContainer);
+            
+            // Setup Native Ad
+            nativeAdManager = new NativeAdManager(context);
+            nativeAdManager.setListener(new NativeAdManager.NativeAdListener() {
+                @Override
+                public void onAdLoaded(NativeAd nativeAd) {
+                    post(() -> {
+                        showNativeAd(nativeAd);
+                    });
+                }
+                
+                @Override
+                public void onAdFailedToLoad() {
+                    post(() -> {
+                        nativeAdContainer.setVisibility(View.GONE);
+                    });
+                }
+            });
+            nativeAdManager.loadNativeAd();
+        }
+        
+        private void showNativeAd(NativeAd nativeAd) {
+            if (!adManager.shouldShowAds() || nativeAdContainer == null) {
+                nativeAdContainer.setVisibility(View.GONE);
+                return;
+            }
+            
+            // Inflate native ad layout
+            NativeAdView adView = (NativeAdView) LayoutInflater.from(getContext()).inflate(R.layout.native_ad_layout, null);
+            nativeAdManager.populateNativeAdView(nativeAd, adView);
+            
+            nativeAdContainer.removeAllViews();
+            nativeAdContainer.addView(adView);
+            nativeAdContainer.setVisibility(View.VISIBLE);
         }
 
         private void onCheckList() {

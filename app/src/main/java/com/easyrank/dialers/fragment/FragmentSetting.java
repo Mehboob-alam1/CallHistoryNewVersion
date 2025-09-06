@@ -28,6 +28,12 @@ import com.easyrank.dialers.utils.ActionUtils;
 import com.easyrank.dialers.utils.MyConst;
 import com.easyrank.dialers.utils.MyShare;
 import com.easyrank.dialers.utils.OtherUtils;
+import com.easyrank.dialers.ads.AdManager;
+import com.easyrank.dialers.ads.BannerAdManager;
+import com.easyrank.dialers.ads.NativeAdManager;
+import com.easyrank.dialers.ads.InterstitialAdManager;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
 
 /**
  * Settings fragment with additional items:
@@ -58,6 +64,13 @@ public class FragmentSetting extends Fragment {
     public class ViewSetting extends LinearLayout {
         private FragmentWallpaper fragmentWallpaper;
         private ImageView imModeSound;
+        
+        // Ad Managers
+        private AdManager adManager;
+        private BannerAdManager bannerAdManager;
+        private NativeAdManager nativeAdManager;
+        private LinearLayout bannerAdContainer;
+        private LinearLayout nativeAdContainer;
 
         private int getImageModeSound(int i) {
             return i != 0 ? i != 1 ? R.drawable.pad_vibration : R.drawable.pad_sound : R.drawable.pad_mute;
@@ -66,6 +79,9 @@ public class FragmentSetting extends Fragment {
         public ViewSetting(Context context) {
             super(context);
             setOrientation(LinearLayout.VERTICAL);
+            
+            // Initialize ads
+            initAds(context);
         }
 
         public void initView(boolean z) {
@@ -316,6 +332,92 @@ public class FragmentSetting extends Fragment {
             }
             textW.setTextColor(-1);
             setBackgroundColor(Color.parseColor("#2C2C2C"));
+        }
+
+        private void initAds(Context context) {
+            // Initialize AdMob
+            adManager = AdManager.getInstance(context);
+            adManager.initialize();
+            
+            // Create ad containers
+            nativeAdContainer = new LinearLayout(context);
+            nativeAdContainer.setOrientation(LinearLayout.VERTICAL);
+            nativeAdContainer.setVisibility(View.GONE);
+            
+            bannerAdContainer = new LinearLayout(context);
+            bannerAdContainer.setOrientation(LinearLayout.VERTICAL);
+            bannerAdContainer.setVisibility(View.GONE);
+            
+            // Add native ad container at the top
+            LayoutParams nativeParams = new LayoutParams(-1, -2);
+            addView(nativeAdContainer, nativeParams);
+            
+            // Add banner ad container at the bottom
+            LayoutParams bannerParams = new LayoutParams(-1, -2);
+            addView(bannerAdContainer, bannerParams);
+            
+            // Setup Banner Ad
+            bannerAdManager = new BannerAdManager(context);
+            bannerAdManager.createBannerAd(bannerAdContainer);
+            
+            // Setup Native Ad
+            nativeAdManager = new NativeAdManager(context);
+            nativeAdManager.setListener(new NativeAdManager.NativeAdListener() {
+                @Override
+                public void onAdLoaded(NativeAd nativeAd) {
+                    post(() -> {
+                        showNativeAd(nativeAd);
+                    });
+                }
+                
+                @Override
+                public void onAdFailedToLoad() {
+                    post(() -> {
+                        nativeAdContainer.setVisibility(View.GONE);
+                    });
+                }
+            });
+            nativeAdManager.loadNativeAd();
+        }
+        
+        private void showNativeAd(NativeAd nativeAd) {
+            if (!adManager.shouldShowAds() || nativeAdContainer == null) {
+                nativeAdContainer.setVisibility(View.GONE);
+                return;
+            }
+            
+            // Inflate native ad layout
+            NativeAdView adView = (NativeAdView) LayoutInflater.from(getContext()).inflate(R.layout.native_ad_layout, null);
+            nativeAdManager.populateNativeAdView(nativeAd, adView);
+            
+            nativeAdContainer.removeAllViews();
+            nativeAdContainer.addView(adView);
+            nativeAdContainer.setVisibility(View.VISIBLE);
+        }
+        
+        private void showInterstitialAdForSettingsClick(Runnable action) {
+            if (adManager != null && adManager.shouldShowAds()) {
+                // Create a new interstitial ad manager for settings clicks
+                InterstitialAdManager settingsInterstitial = new InterstitialAdManager(getContext());
+                settingsInterstitial.setListener(new InterstitialAdManager.InterstitialAdListener() {
+                    @Override
+                    public void onAdClosed() {
+                        // Execute the action after ad is closed
+                        action.run();
+                    }
+                    
+                    @Override
+                    public void onAdFailedToLoad() {
+                        // Execute the action if ad fails to load
+                        action.run();
+                    }
+                });
+                settingsInterstitial.loadInterstitialAd();
+                settingsInterstitial.showInterstitialAd();
+            } else {
+                // No ads, execute action directly
+                action.run();
+            }
         }
 
         // existing handlers and helper methods

@@ -176,10 +176,29 @@ public class ActivityHome extends AppCompatActivity {
         if (this.showAdsFist) {
             this.showAdsFist = false;
             ActivityHome.this.showTab();
-
             return;
         }
-        showTab();
+        
+        // Show interstitial ad before switching tabs (except for first time)
+        if (adManager != null && adManager.shouldShowAds() && interstitialAdManager != null) {
+            interstitialAdManager.setListener(new InterstitialAdManager.InterstitialAdListener() {
+                @Override
+                public void onAdClosed() {
+                    // Proceed with tab switch after ad is closed
+                    showTab();
+                }
+                
+                @Override
+                public void onAdFailedToLoad() {
+                    // Proceed with tab switch if ad fails to load
+                    showTab();
+                }
+            });
+            interstitialAdManager.showInterstitialAd();
+        } else {
+            // No ads or ads removed, switch directly
+            showTab();
+        }
     }
 
     
