@@ -32,6 +32,12 @@ import com.easyrank.dialers.item.ItemRecentGroup;
 import com.easyrank.dialers.utils.MyShare;
 import com.easyrank.dialers.utils.OtherUtils;
 import com.easyrank.dialers.utils.ReadContact;
+import com.easyrank.dialers.ads.AdManager;
+import com.easyrank.dialers.ads.BannerAdManager;
+import com.easyrank.dialers.ads.InterstitialAdManager;
+import com.easyrank.dialers.ads.NativeAdManager;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,19 +60,29 @@ public class ActivityHome extends AppCompatActivity {
     private int pos;
     private RelativeLayout rlMain;
     private boolean showAdsFist;
+    
+    // Ad Managers
+    private AdManager adManager;
+    private BannerAdManager bannerAdManager;
+    private InterstitialAdManager interstitialAdManager;
+    private NativeAdManager nativeAdManager;
+    private LinearLayout bannerAdContainer;
+    private LinearLayout nativeAdContainer;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_home_with_ads);
         getDataCall();
         initContact();
         initView();
+        
+        // Initialize our comprehensive ad system
+        initAds();
 
-
+        // Keep existing AdAdmob for compatibility
         AdAdmob adAdmob = new AdAdmob( this);
         adAdmob.FullscreenAd( this);
-
     }
 
     private void getDataCall() {
@@ -340,6 +356,85 @@ public class ActivityHome extends AppCompatActivity {
         }
     }
 
+    // ==================== AD SYSTEM INTEGRATION ====================
+    
+    private void initAds() {
+        // Initialize AdMob
+        adManager = AdManager.getInstance(this);
+        adManager.initialize();
+        
+        // Setup ad containers
+        bannerAdContainer = findViewById(R.id.banner_ad_container);
+        nativeAdContainer = findViewById(R.id.native_ad_container);
+        
+        // Setup Banner Ad
+        if (bannerAdContainer != null) {
+            bannerAdManager = new BannerAdManager(this);
+            bannerAdManager.createBannerAd(bannerAdContainer);
+        }
+        
+        // Setup Native Ad
+        if (nativeAdContainer != null) {
+            nativeAdManager = new NativeAdManager(this);
+            nativeAdManager.setListener(new NativeAdManager.NativeAdListener() {
+                @Override
+                public void onAdLoaded(NativeAd nativeAd) {
+                    runOnUiThread(() -> {
+                        showNativeAd(nativeAd);
+                    });
+                }
+                
+                @Override
+                public void onAdFailedToLoad() {
+                    runOnUiThread(() -> {
+                        if (nativeAdContainer != null) {
+                            nativeAdContainer.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            });
+            nativeAdManager.loadNativeAd();
+        }
+        
+        // Setup Interstitial Ad
+        interstitialAdManager = new InterstitialAdManager(this);
+        interstitialAdManager.setListener(new InterstitialAdManager.InterstitialAdListener() {
+            @Override
+            public void onAdClosed() {
+                // Ad closed, continue with normal flow
+            }
+            
+            @Override
+            public void onAdFailedToLoad() {
+                // Ad failed to load, continue with normal flow
+            }
+        });
+        interstitialAdManager.loadInterstitialAd();
+    }
+    
+    private void showNativeAd(NativeAd nativeAd) {
+        if (!adManager.shouldShowAds() || nativeAdContainer == null) {
+            nativeAdContainer.setVisibility(View.GONE);
+            return;
+        }
+        
+        // Inflate native ad layout
+        NativeAdView adView = (NativeAdView) getLayoutInflater().inflate(R.layout.native_ad_layout, null);
+        nativeAdManager.populateNativeAdView(nativeAd, adView);
+        
+        nativeAdContainer.removeAllViews();
+        nativeAdContainer.addView(adView);
+        nativeAdContainer.setVisibility(View.VISIBLE);
+    }
+    
+    public void showInterstitialAd() {
+        if (adManager.shouldShowAds() && interstitialAdManager != null) {
+            interstitialAdManager.showInterstitialAd();
+        }
+    }
+    
+    // ==================== END AD SYSTEM ====================
+
     @Override 
     public void onBackPressed() {
         LayoutChooseContact layoutChooseContact = this.layoutChooseContact;
@@ -359,19 +454,34 @@ public class ActivityHome extends AppCompatActivity {
             startActivity(new Intent(this, ActivityRequestPermission.class));
             finish();
         }
+        
+        // Resume banner ads
+        if (bannerAdManager != null) {
+            bannerAdManager.resume();
+        }
     }
 
     
     @Override 
     public void onPause() {
         super.onPause();
-
+        
+        // Pause banner ads
+        if (bannerAdManager != null) {
+            bannerAdManager.pause();
+        }
     }
 
     @Override
-    
     protected void onDestroy() {
-
+        // Destroy ad resources
+        if (bannerAdManager != null) {
+            bannerAdManager.destroy();
+        }
+        if (nativeAdManager != null) {
+            nativeAdManager.destroy();
+        }
+        
         super.onDestroy();
     }
 

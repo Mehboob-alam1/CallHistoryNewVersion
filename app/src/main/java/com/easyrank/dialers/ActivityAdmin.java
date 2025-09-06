@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ActivityAdmin extends BaseActivity {
+public class ActivityAdmin extends AppCompatActivity {
     private static final String TAG = "ActivityAdmin";
     
     @Override

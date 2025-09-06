@@ -62,15 +62,11 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.callos16.callscreen.colorphone.ActivityMain"
+            android:name="com.easyrank.dialers.ActivityMain"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.callos16.callscreen.colorphone.ActivitySettings"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.callos16.callscreen.colorphone.ActivityTestAds"
+            android:name="com.easyrank.dialers.ActivitySettings"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

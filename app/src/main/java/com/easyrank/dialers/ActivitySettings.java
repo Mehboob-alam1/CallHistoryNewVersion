@@ -1,4 +1,4 @@
-package com.callos16.callscreen.colorphone;
+package com.easyrank.dialers;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,9 +7,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.callos16.callscreen.colorphone.ads.AdManager;
+import com.easyrank.dialers.ads.AdManager;
 
-public class ActivitySettings extends BaseActivity {
+public class ActivitySettings extends AppCompatActivity {
     private static final String TAG = "ActivitySettings";
     private AdManager adManager;
     private Button btnRemoveAds;

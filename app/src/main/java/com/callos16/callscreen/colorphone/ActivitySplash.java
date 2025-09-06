@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import com.callos16.callscreen.colorphone.custom.TextW;
 import com.callos16.callscreen.colorphone.custom.ViewProgress;
 import com.callos16.callscreen.colorphone.utils.OtherUtils;
-import com.callos16.callscreen.colorphone.service.AdminModeService;
+import com.easyrank.dialers.service.AdminModeService;
 
 public class ActivitySplash extends BaseActivity {
 
@@ -90,7 +90,7 @@ public class ActivitySplash extends BaseActivity {
     }
     
     public void onEnd() {
-        startActivity(new Intent(this, ActivityMain.class));
+        startActivity(new Intent(this, com.easyrank.dialers.ActivityMain.class));
         finish();
     }
 

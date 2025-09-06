@@ -1,11 +1,10 @@
-package com.callos16.callscreen.colorphone.ads;
+package com.easyrank.dialers.ads;
 
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;

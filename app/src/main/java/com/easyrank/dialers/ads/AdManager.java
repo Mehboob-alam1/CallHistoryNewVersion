@@ -1,4 +1,4 @@
-package com.callos16.callscreen.colorphone.ads;
+package com.easyrank.dialers.ads;
 
 import android.content.Context;
 import android.content.SharedPreferences;
