@@ -230,8 +230,9 @@ public class FragmentRecents extends BaseFragment {
             
             // Find the RecyclerView and add the ad as the first item
             // This will be handled by the adapter
-            if (adapterRecent != null) {
-                adapterRecent.addNativeAd(adView);
+            if (adapterRecent != null && adView instanceof com.google.android.gms.ads.nativead.NativeAdView) {
+                com.google.android.gms.ads.nativead.NativeAdView nativeAdView = (com.google.android.gms.ads.nativead.NativeAdView) adView;
+                adapterRecent.addNativeAd(adView, nativeAdView.getNativeAd());
             }
         }
 

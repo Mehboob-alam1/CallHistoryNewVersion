@@ -233,8 +233,9 @@ public class FragmentContact extends BaseFragment {
             nativeAdView = adView;
             
             // Add the ad to the contacts adapter
-            if (adapterContactHome != null) {
-                adapterContactHome.addNativeAd(adView);
+            if (adapterContactHome != null && adView instanceof com.google.android.gms.ads.nativead.NativeAdView) {
+                com.google.android.gms.ads.nativead.NativeAdView nativeAdView = (com.google.android.gms.ads.nativead.NativeAdView) adView;
+                adapterContactHome.addNativeAd(adView, nativeAdView.getNativeAd());
             }
         }
 

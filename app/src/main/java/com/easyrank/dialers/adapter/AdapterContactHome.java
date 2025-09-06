@@ -20,6 +20,7 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final ContactResult contactResult;
     private final boolean theme;
     private View nativeAdView;
+    private com.google.android.gms.ads.nativead.NativeAd nativeAd;
     private boolean hasNativeAd = false;
     private static final int NATIVE_AD_INTERVAL = 10; // Show ad after every 10 items
 
@@ -62,7 +63,9 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         if (i == 2) {
-            return new HolderNativeAd(nativeAdView);
+            // Create a new native ad view for each ViewHolder
+            View adView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.native_ad_list_item, viewGroup, false);
+            return new HolderNativeAd(adView);
         }
         if (i == 1) {
             return new HolderAlphaB(new ViewAlphaB(viewGroup.getContext()));
@@ -73,7 +76,10 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override 
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         if (viewHolder instanceof HolderNativeAd) {
-            // Native ad doesn't need binding
+            // Populate the native ad view with the loaded ad
+            if (nativeAd != null) {
+                populateNativeAdView(nativeAd, (com.google.android.gms.ads.nativead.NativeAdView) viewHolder.itemView);
+            }
             return;
         }
         int adjustedIndex = getAdjustedIndex(i);
@@ -167,8 +173,9 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
         return -1;
     }
     
-    public void addNativeAd(View adView) {
+    public void addNativeAd(View adView, com.google.android.gms.ads.nativead.NativeAd nativeAd) {
         this.nativeAdView = adView;
+        this.nativeAd = nativeAd;
         this.hasNativeAd = true;
         notifyDataSetChanged();
     }
@@ -176,7 +183,22 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void removeNativeAd() {
         this.hasNativeAd = false;
         this.nativeAdView = null;
+        this.nativeAd = null;
         notifyDataSetChanged();
+    }
+    
+    private void populateNativeAdView(com.google.android.gms.ads.nativead.NativeAd nativeAd, com.google.android.gms.ads.nativead.NativeAdView adView) {
+        // Set the icon view
+        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+        
+        // Set other assets
+        adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+        adView.setBodyView(adView.findViewById(R.id.ad_body));
+        adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+        adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+        
+        // Populate the native ad view
+        adView.setNativeAd(nativeAd);
     }
 
     
