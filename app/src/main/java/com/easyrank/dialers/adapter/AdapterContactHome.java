@@ -40,11 +40,17 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override 
     public int getItemViewType(int i) {
-        if (hasNativeAd && shouldShowNativeAdAtPosition(i)) {
+        boolean shouldShowAd = hasNativeAd && shouldShowNativeAdAtPosition(i);
+        Log.d("AdapterContactHome", "getItemViewType position: " + i + ", shouldShowAd: " + shouldShowAd + ", hasNativeAd: " + hasNativeAd);
+        
+        if (shouldShowAd) {
+            Log.d("AdapterContactHome", "Returning native ad type (2) for position: " + i);
             return 2; // Native ad type
         }
         int adjustedIndex = getAdjustedIndex(i);
-        return this.arrFilter.get(adjustedIndex).alphaB != null ? 1 : 0;
+        int viewType = this.arrFilter.get(adjustedIndex).alphaB != null ? 1 : 0;
+        Log.d("AdapterContactHome", "Returning view type: " + viewType + " for position: " + i);
+        return viewType;
     }
     
     private boolean shouldShowNativeAdAtPosition(int position) {
@@ -174,9 +180,18 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
     
     public void addNativeAd(View adView, com.google.android.gms.ads.nativead.NativeAd nativeAd) {
+        Log.d("AdapterContactHome", "addNativeAd called");
+        Log.d("AdapterContactHome", "adView != null: " + (adView != null));
+        Log.d("AdapterContactHome", "nativeAd != null: " + (nativeAd != null));
+        
         this.nativeAdView = adView;
         this.nativeAd = nativeAd;
         this.hasNativeAd = true;
+        
+        Log.d("AdapterContactHome", "hasNativeAd set to: " + hasNativeAd);
+        Log.d("AdapterContactHome", "arrFilter.size(): " + arrFilter.size());
+        Log.d("AdapterContactHome", "getItemCount(): " + getItemCount());
+        
         notifyDataSetChanged();
     }
     

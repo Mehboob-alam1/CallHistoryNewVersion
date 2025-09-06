@@ -28,13 +28,17 @@ public class AdManager {
     private static final String TEST_NATIVE_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110";
     
     // Set to true for testing, false for production
-    private static final boolean USE_TEST_ADS = false;
+    private static final boolean USE_TEST_ADS = true;
     
     private static AdManager instance;
     private Context context;
     private SharedPreferences preferences;
     private boolean adsRemoved = false;
     private boolean isInitialized = false;
+    
+    public boolean isInitialized() {
+        return isInitialized;
+    }
     
     private AdManager(Context context) {
         this.context = context.getApplicationContext();

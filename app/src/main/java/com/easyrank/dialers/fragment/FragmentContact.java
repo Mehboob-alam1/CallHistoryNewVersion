@@ -226,7 +226,12 @@ public class FragmentContact extends BaseFragment {
         }
         
         private void addNativeAdToList(View adView, NativeAd nativeAd) {
+            Log.d("FragmentContact", "addNativeAdToList called");
+            Log.d("FragmentContact", "adManager.shouldShowAds(): " + adManager.shouldShowAds());
+            Log.d("FragmentContact", "adapterContactHome != null: " + (adapterContactHome != null));
+            
             if (!adManager.shouldShowAds()) {
+                Log.d("FragmentContact", "Ads disabled, not adding native ad");
                 return;
             }
             
@@ -236,7 +241,10 @@ public class FragmentContact extends BaseFragment {
             
             // Add the ad to the contacts adapter
             if (adapterContactHome != null) {
+                Log.d("FragmentContact", "Adding native ad to adapter");
                 adapterContactHome.addNativeAd(adView, nativeAd);
+            } else {
+                Log.d("FragmentContact", "adapterContactHome is null, cannot add native ad");
             }
         }
 

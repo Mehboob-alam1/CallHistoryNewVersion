@@ -32,6 +32,12 @@ public class NativeAdListManager {
     }
     
     public void loadNativeAd() {
+        Log.d(TAG, "Loading native ad...");
+        Log.d(TAG, "AdManager shouldShowAds: " + adManager.shouldShowAds());
+        Log.d(TAG, "AdManager isInitialized: " + adManager.isInitialized);
+        Log.d(TAG, "AdManager adsRemoved: " + adManager.areAdsRemoved());
+        Log.d(TAG, "Native Ad Unit ID: " + adManager.getNativeAdUnitId());
+        
         if (!adManager.shouldShowAds()) {
             Log.d(TAG, "Ads removed or not initialized, skipping native ad");
             if (listener != null) {
