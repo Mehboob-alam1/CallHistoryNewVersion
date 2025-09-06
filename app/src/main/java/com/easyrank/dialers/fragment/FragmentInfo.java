@@ -215,6 +215,7 @@ public class FragmentInfo extends Fragment {
         private AdManager adManager;
         private NativeAdListManager nativeAdListManager;
         private View nativeAdView;
+        private NativeAd nativeAd;
         private static final int NATIVE_AD_INTERVAL = 10; // Show ad after every 10 items
 
         public ViewInfo(Context context) {
@@ -625,7 +626,8 @@ public class FragmentInfo extends Fragment {
                 @Override
                 public void onAdLoaded(NativeAd nativeAd, View adView) {
                     post(() -> {
-                        nativeAdView = adView;
+                        ViewInfo.this.nativeAdView = adView;
+                        ViewInfo.this.nativeAd = nativeAd;
                         // Ad is ready, will be shown when updateContact is called
                     });
                 }
@@ -641,22 +643,30 @@ public class FragmentInfo extends Fragment {
         }
         
         private void addNativeAdToContact() {
-            if (nativeAdView != null && adManager != null && adManager.shouldShowAds()) {
-                // Create a copy of the native ad view for this contact
-                View adView = LayoutInflater.from(getContext()).inflate(R.layout.native_ad_list_item, null);
+            if (nativeAd != null && adManager != null && adManager.shouldShowAds()) {
+                // Create a new native ad view for this contact
+                com.google.android.gms.ads.nativead.NativeAdView adView = (com.google.android.gms.ads.nativead.NativeAdView) LayoutInflater.from(getContext()).inflate(R.layout.native_ad_list_item, null);
                 
-                // Copy the native ad content to the new view
-                if (nativeAdView instanceof com.google.android.gms.ads.nativead.NativeAdView) {
-                    com.google.android.gms.ads.nativead.NativeAdView originalAdView = (com.google.android.gms.ads.nativead.NativeAdView) nativeAdView;
-                    com.google.android.gms.ads.nativead.NativeAdView newAdView = (com.google.android.gms.ads.nativead.NativeAdView) adView;
-                    
-                    // Copy the native ad data
-                    newAdView.setNativeAd(originalAdView.getNativeAd());
-                }
+                // Populate the native ad view with the loaded ad
+                populateNativeAdView(nativeAd, adView);
                 
                 // Add the ad to the contact layout
                 this.llNumber.addView(adView, -1, -2);
             }
+        }
+        
+        private void populateNativeAdView(NativeAd nativeAd, com.google.android.gms.ads.nativead.NativeAdView adView) {
+            // Set the icon view
+            adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+            
+            // Set other assets
+            adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+            adView.setBodyView(adView.findViewById(R.id.ad_body));
+            adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+            adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+            
+            // Populate the native ad view
+            adView.setNativeAd(nativeAd);
         }
 
         public  void m122x2c824af3() {
