@@ -11,14 +11,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Native Ad Container -->
-        <LinearLayout
-            android:id="@+id/native_ad_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone" />
-
         <FrameLayout
             android:id="@+id/frame"
             android:layout_width="match_parent"
@@ -34,13 +26,5 @@
             android:id="@+id/v_tab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <!-- Banner Ad Container -->
-        <LinearLayout
-            android:id="@+id/banner_ad_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone" />
     </LinearLayout>
 </RelativeLayout>

@@ -1,0 +1,88 @@
+package com.easyrank.dialers.ads;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
+
+public class NativeAdListManager {
+    private static final String TAG = "NativeAdListManager";
+    private AdManager adManager;
+    private Context context;
+    private NativeAdListener listener;
+    
+    public interface NativeAdListener {
+        void onAdLoaded(NativeAd nativeAd, View adView);
+        void onAdFailedToLoad();
+    }
+    
+    public NativeAdListManager(Context context) {
+        this.context = context;
+        this.adManager = AdManager.getInstance(context);
+    }
+    
+    public void setListener(NativeAdListener listener) {
+        this.listener = listener;
+    }
+    
+    public void loadNativeAd() {
+        if (!adManager.shouldShowAds()) {
+            Log.d(TAG, "Ads removed or not initialized, skipping native ad");
+            if (listener != null) {
+                listener.onAdFailedToLoad();
+            }
+            return;
+        }
+        
+        AdLoader adLoader = new AdLoader.Builder(context, adManager.getNativeAdUnitId())
+                .forNativeAd(new NativeAd.OnNativeAdLoadedListener() {
+                    @Override
+                    public void onNativeAdLoaded(NativeAd nativeAd) {
+                        Log.d(TAG, "Native ad loaded successfully");
+                        if (listener != null) {
+                            View adView = createNativeAdView(nativeAd);
+                            listener.onAdLoaded(nativeAd, adView);
+                        }
+                    }
+                })
+                .withAdListener(new com.google.android.gms.ads.AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(LoadAdError adError) {
+                        Log.e(TAG, "Native ad failed to load: " + adError.getMessage());
+                        if (listener != null) {
+                            listener.onAdFailedToLoad();
+                        }
+                    }
+                })
+                .build();
+        
+        AdRequest adRequest = adManager.createAdRequest();
+        adLoader.loadAd(adRequest);
+    }
+    
+    private View createNativeAdView(NativeAd nativeAd) {
+        NativeAdView adView = (NativeAdView) LayoutInflater.from(context).inflate(R.layout.native_ad_list_item, null);
+        populateNativeAdView(nativeAd, adView);
+        return adView;
+    }
+    
+    private void populateNativeAdView(NativeAd nativeAd, NativeAdView adView) {
+        // Set the icon view
+        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+        
+        // Set other assets
+        adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+        adView.setBodyView(adView.findViewById(R.id.ad_body));
+        adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+        adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+        
+        // Populate the native ad view
+        adView.setNativeAd(nativeAd);
+    }
+}

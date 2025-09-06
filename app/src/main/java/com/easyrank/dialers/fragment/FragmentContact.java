@@ -30,10 +30,8 @@ import com.easyrank.dialers.utils.OtherUtils;
 import com.easyrank.dialers.utils.ReadContact;
 import com.easyrank.dialers.utils.SimUtils;
 import com.easyrank.dialers.ads.AdManager;
-import com.easyrank.dialers.ads.BannerAdManager;
-import com.easyrank.dialers.ads.NativeAdManager;
+import com.easyrank.dialers.ads.NativeAdListManager;
 import com.google.android.gms.ads.nativead.NativeAd;
-import com.google.android.gms.ads.nativead.NativeAdView;
 
 import java.util.ArrayList;
 
@@ -94,10 +92,8 @@ public class FragmentContact extends BaseFragment {
         
         // Ad Managers
         private AdManager adManager;
-        private BannerAdManager bannerAdManager;
-        private NativeAdManager nativeAdManager;
-        private LinearLayout bannerAdContainer;
-        private LinearLayout nativeAdContainer;
+        private NativeAdListManager nativeAdListManager;
+        private View nativeAdView;
 
         public ViewContact(Context context) {
             super(context);
@@ -208,62 +204,38 @@ public class FragmentContact extends BaseFragment {
             adManager = AdManager.getInstance(context);
             adManager.initialize();
             
-            // Create ad containers
-            nativeAdContainer = new LinearLayout(context);
-            nativeAdContainer.setOrientation(LinearLayout.VERTICAL);
-            nativeAdContainer.setVisibility(View.GONE);
-            
-            bannerAdContainer = new LinearLayout(context);
-            bannerAdContainer.setOrientation(LinearLayout.VERTICAL);
-            bannerAdContainer.setVisibility(View.GONE);
-            
-            // Add native ad container at the top
-            LayoutParams nativeParams = new LayoutParams(-1, -2);
-            nativeParams.addRule(10); // ALIGN_PARENT_TOP
-            addView(nativeAdContainer, nativeParams);
-            
-            // Add banner ad container at the bottom
-            LayoutParams bannerParams = new LayoutParams(-1, -2);
-            bannerParams.addRule(12); // ALIGN_PARENT_BOTTOM
-            addView(bannerAdContainer, bannerParams);
-            
-            // Setup Banner Ad
-            bannerAdManager = new BannerAdManager(context);
-            bannerAdManager.createBannerAd(bannerAdContainer);
-            
-            // Setup Native Ad
-            nativeAdManager = new NativeAdManager(context);
-            nativeAdManager.setListener(new NativeAdManager.NativeAdListener() {
+            // Setup Native Ad List Manager
+            nativeAdListManager = new NativeAdListManager(context);
+            nativeAdListManager.setListener(new NativeAdListManager.NativeAdListener() {
                 @Override
-                public void onAdLoaded(NativeAd nativeAd) {
+                public void onAdLoaded(NativeAd nativeAd, View adView) {
                     post(() -> {
-                        showNativeAd(nativeAd);
+                        addNativeAdToList(adView);
                     });
                 }
                 
                 @Override
                 public void onAdFailedToLoad() {
-                    post(() -> {
-                        nativeAdContainer.setVisibility(View.GONE);
-                    });
+                    // Ad failed to load, continue without ad
                 }
             });
-            nativeAdManager.loadNativeAd();
+            
+            // Load native ad
+            nativeAdListManager.loadNativeAd();
         }
         
-        private void showNativeAd(NativeAd nativeAd) {
-            if (!adManager.shouldShowAds() || nativeAdContainer == null) {
-                nativeAdContainer.setVisibility(View.GONE);
+        private void addNativeAdToList(View adView) {
+            if (!adManager.shouldShowAds()) {
                 return;
             }
             
-            // Inflate native ad layout
-            NativeAdView adView = (NativeAdView) LayoutInflater.from(getContext()).inflate(R.layout.native_ad_layout, null);
-            nativeAdManager.populateNativeAdView(nativeAd, adView);
+            // Add native ad as the first item in the contacts list
+            nativeAdView = adView;
             
-            nativeAdContainer.removeAllViews();
-            nativeAdContainer.addView(adView);
-            nativeAdContainer.setVisibility(View.VISIBLE);
+            // Add the ad to the contacts adapter
+            if (adapterContactHome != null) {
+                adapterContactHome.addNativeAd(adView);
+            }
         }
 
         private void onCheckList() {
