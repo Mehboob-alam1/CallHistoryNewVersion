@@ -94,6 +94,7 @@ public class FragmentContact extends BaseFragment {
         private AdManager adManager;
         private NativeAdListManager nativeAdListManager;
         private View nativeAdView;
+        private NativeAd nativeAd;
 
         public ViewContact(Context context) {
             super(context);
@@ -210,7 +211,7 @@ public class FragmentContact extends BaseFragment {
                 @Override
                 public void onAdLoaded(NativeAd nativeAd, View adView) {
                     post(() -> {
-                        addNativeAdToList(adView);
+                        addNativeAdToList(adView, nativeAd);
                     });
                 }
                 
@@ -224,18 +225,18 @@ public class FragmentContact extends BaseFragment {
             nativeAdListManager.loadNativeAd();
         }
         
-        private void addNativeAdToList(View adView) {
+        private void addNativeAdToList(View adView, NativeAd nativeAd) {
             if (!adManager.shouldShowAds()) {
                 return;
             }
             
-            // Add native ad as the first item in the contacts list
-            nativeAdView = adView;
+            // Store the native ad data
+            this.nativeAdView = adView;
+            this.nativeAd = nativeAd;
             
             // Add the ad to the contacts adapter
-            if (adapterContactHome != null && adView instanceof com.google.android.gms.ads.nativead.NativeAdView) {
-                com.google.android.gms.ads.nativead.NativeAdView nativeAdView = (com.google.android.gms.ads.nativead.NativeAdView) adView;
-                adapterContactHome.addNativeAd(adView, nativeAdView.getNativeAd());
+            if (adapterContactHome != null) {
+                adapterContactHome.addNativeAd(adView, nativeAd);
             }
         }
 

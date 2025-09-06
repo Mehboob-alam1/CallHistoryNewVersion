@@ -75,6 +75,7 @@ public class FragmentRecents extends BaseFragment {
         private AdManager adManager;
         private NativeAdListManager nativeAdListManager;
         private View nativeAdView;
+        private NativeAd nativeAd;
 
         public ViewFragmentRecents(Context context) {
             super(context);
@@ -205,7 +206,7 @@ public class FragmentRecents extends BaseFragment {
                 @Override
                 public void onAdLoaded(NativeAd nativeAd, View adView) {
                     post(() -> {
-                        addNativeAdToList(adView);
+                        addNativeAdToList(adView, nativeAd);
                     });
                 }
                 
@@ -219,20 +220,18 @@ public class FragmentRecents extends BaseFragment {
             nativeAdListManager.loadNativeAd();
         }
         
-        private void addNativeAdToList(View adView) {
+        private void addNativeAdToList(View adView, NativeAd nativeAd) {
             if (!adManager.shouldShowAds()) {
                 return;
             }
             
-            // Add native ad as the first item in the list
-            // We'll add it after the header but before the first recent item
-            nativeAdView = adView;
+            // Store the native ad data
+            this.nativeAdView = adView;
+            this.nativeAd = nativeAd;
             
-            // Find the RecyclerView and add the ad as the first item
-            // This will be handled by the adapter
-            if (adapterRecent != null && adView instanceof com.google.android.gms.ads.nativead.NativeAdView) {
-                com.google.android.gms.ads.nativead.NativeAdView nativeAdView = (com.google.android.gms.ads.nativead.NativeAdView) adView;
-                adapterRecent.addNativeAd(adView, nativeAdView.getNativeAd());
+            // Add the ad to the recents adapter
+            if (adapterRecent != null) {
+                adapterRecent.addNativeAd(adView, nativeAd);
             }
         }
 
