@@ -70,6 +70,10 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name="com.callos16.callscreen.colorphone.ActivityTestAds"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.easyrank.dialers.DialerActivity"
             android:exported="true">
             <intent-filter>

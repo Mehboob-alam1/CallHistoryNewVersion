@@ -1,6 +1,5 @@
 package com.callos16.callscreen.colorphone;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,8 +12,8 @@ import com.callos16.callscreen.colorphone.ads.NativeAdManager;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
 
-public class ActivityMain extends BaseActivity {
-    private static final String TAG = "ActivityMain";
+public class ActivityTestAds extends BaseActivity {
+    private static final String TAG = "ActivityTestAds";
     private AdManager adManager;
     private BannerAdManager bannerAdManager;
     private InterstitialAdManager interstitialAdManager;
@@ -30,68 +29,85 @@ public class ActivityMain extends BaseActivity {
         adManager = AdManager.getInstance(this);
         adManager.initialize();
         
-        createMainUI();
+        createTestUI();
         setupAds();
     }
     
-    private void createMainUI() {
+    private void createTestUI() {
         LinearLayout mainLayout = new LinearLayout(this);
         mainLayout.setOrientation(LinearLayout.VERTICAL);
         mainLayout.setPadding(20, 20, 20, 20);
         
         // Title
         TextView title = new TextView(this);
-        title.setText("iCall OS16 - Main Screen");
+        title.setText("AdMob Ads Test Screen");
         title.setTextSize(20);
         title.setPadding(0, 0, 0, 20);
         mainLayout.addView(title);
+        
+        // Ad Status
+        TextView adStatus = new TextView(this);
+        adStatus.setText("Ad Status: " + (adManager.areAdsRemoved() ? "REMOVED" : "ACTIVE"));
+        adStatus.setTextSize(16);
+        adStatus.setPadding(0, 0, 0, 20);
+        mainLayout.addView(adStatus);
         
         // Native Ad Container
         nativeAdContainer = new LinearLayout(this);
         nativeAdContainer.setOrientation(LinearLayout.VERTICAL);
         mainLayout.addView(nativeAdContainer);
         
-        // Buttons
-        Button btnCall = new Button(this);
-        btnCall.setText("Make a Call");
-        btnCall.setOnClickListener(new View.OnClickListener() {
+        // Test Buttons
+        Button btnTestInterstitial = new Button(this);
+        btnTestInterstitial.setText("Test Interstitial Ad");
+        btnTestInterstitial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Show interstitial ad before making call
-                showInterstitialAd();
+                testInterstitialAd();
             }
         });
-        mainLayout.addView(btnCall);
+        mainLayout.addView(btnTestInterstitial);
         
-        Button btnSettings = new Button(this);
-        btnSettings.setText("Settings");
-        btnSettings.setOnClickListener(new View.OnClickListener() {
+        Button btnTestBanner = new Button(this);
+        btnTestBanner.setText("Test Banner Ad");
+        btnTestBanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ActivityMain.this, ActivitySettings.class));
+                testBannerAd();
             }
         });
-        mainLayout.addView(btnSettings);
+        mainLayout.addView(btnTestBanner);
         
-        Button btnDialer = new Button(this);
-        btnDialer.setText("Open Dialer");
-        btnDialer.setOnClickListener(new View.OnClickListener() {
+        Button btnTestNative = new Button(this);
+        btnTestNative.setText("Test Native Ad");
+        btnTestNative.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ActivityMain.this, com.easyrank.dialers.ActivityHome.class));
+                testNativeAd();
             }
         });
-        mainLayout.addView(btnDialer);
+        mainLayout.addView(btnTestNative);
         
-        Button btnTestAds = new Button(this);
-        btnTestAds.setText("Test Ads");
-        btnTestAds.setOnClickListener(new View.OnClickListener() {
+        Button btnRemoveAds = new Button(this);
+        btnRemoveAds.setText("Remove Ads");
+        btnRemoveAds.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ActivityMain.this, ActivityTestAds.class));
+                adManager.removeAds();
+                recreate(); // Refresh the activity
             }
         });
-        mainLayout.addView(btnTestAds);
+        mainLayout.addView(btnRemoveAds);
+        
+        Button btnBack = new Button(this);
+        btnBack.setText("Back to Main");
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        mainLayout.addView(btnBack);
         
         // Banner Ad Container
         bannerAdContainer = new LinearLayout(this);
@@ -124,24 +140,38 @@ public class ActivityMain extends BaseActivity {
                 });
             }
         });
-        nativeAdManager.loadNativeAd();
         
         // Setup Interstitial Ad
         interstitialAdManager = new InterstitialAdManager(this);
         interstitialAdManager.setListener(new InterstitialAdManager.InterstitialAdListener() {
             @Override
             public void onAdClosed() {
-                // Proceed with call after ad is closed
-                makeCall();
+                android.widget.Toast.makeText(ActivityTestAds.this, "Interstitial ad closed", android.widget.Toast.LENGTH_SHORT).show();
             }
             
             @Override
             public void onAdFailedToLoad() {
-                // Proceed with call if ad fails to load
-                makeCall();
+                android.widget.Toast.makeText(ActivityTestAds.this, "Interstitial ad failed to load", android.widget.Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    
+    private void testInterstitialAd() {
         interstitialAdManager.loadInterstitialAd();
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                interstitialAdManager.showInterstitialAd();
+            }
+        }, 2000); // Wait 2 seconds for ad to load
+    }
+    
+    private void testBannerAd() {
+        bannerAdManager.createBannerAd(bannerAdContainer);
+    }
+    
+    private void testNativeAd() {
+        nativeAdManager.loadNativeAd();
     }
     
     private void showNativeAd(NativeAd nativeAd) {
@@ -157,19 +187,6 @@ public class ActivityMain extends BaseActivity {
         nativeAdContainer.removeAllViews();
         nativeAdContainer.addView(adView);
         nativeAdContainer.setVisibility(View.VISIBLE);
-    }
-    
-    private void showInterstitialAd() {
-        if (adManager.shouldShowAds()) {
-            interstitialAdManager.showInterstitialAd();
-        } else {
-            makeCall();
-        }
-    }
-    
-    private void makeCall() {
-        // Simulate making a call
-        android.widget.Toast.makeText(this, "Calling...", android.widget.Toast.LENGTH_SHORT).show();
     }
     
     @Override

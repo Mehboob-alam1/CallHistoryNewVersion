@@ -2,10 +2,11 @@ package com.callos16.callscreen.colorphone.ads;
 
 import android.content.Context;
 import android.util.Log;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 public class InterstitialAdManager {
     private static final String TAG = "InterstitialAdManager";
@@ -37,45 +38,55 @@ public class InterstitialAdManager {
             return;
         }
         
-        interstitialAd = new InterstitialAd(context);
-        interstitialAd.setAdUnitId(adManager.getInterstitialAdUnitId());
+        AdRequest adRequest = adManager.createAdRequest();
         
-        interstitialAd.setAdListener(new AdListener() {
+        InterstitialAd.load(context, adManager.getInterstitialAdUnitId(), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onAdLoaded() {
+            public void onAdLoaded(InterstitialAd ad) {
                 Log.d(TAG, "Interstitial ad loaded successfully");
+                interstitialAd = ad;
+                
+                interstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        Log.d(TAG, "Interstitial ad dismissed");
+                        interstitialAd = null;
+                        if (listener != null) {
+                            listener.onAdClosed();
+                        }
+                    }
+                    
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(com.google.android.gms.ads.AdError adError) {
+                        Log.e(TAG, "Interstitial ad failed to show: " + adError.getMessage());
+                        interstitialAd = null;
+                        if (listener != null) {
+                            listener.onAdFailedToLoad();
+                        }
+                    }
+                    
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                        Log.d(TAG, "Interstitial ad showed");
+                    }
+                });
             }
             
             @Override
             public void onAdFailedToLoad(LoadAdError adError) {
                 Log.e(TAG, "Interstitial ad failed to load: " + adError.getMessage());
+                interstitialAd = null;
                 if (listener != null) {
                     listener.onAdFailedToLoad();
                 }
             }
-            
-            @Override
-            public void onAdOpened() {
-                Log.d(TAG, "Interstitial ad opened");
-            }
-            
-            @Override
-            public void onAdClosed() {
-                Log.d(TAG, "Interstitial ad closed");
-                if (listener != null) {
-                    listener.onAdClosed();
-                }
-            }
         });
-        
-        AdRequest adRequest = adManager.createAdRequest();
-        interstitialAd.loadAd(adRequest);
     }
     
     public void showInterstitialAd() {
-        if (interstitialAd != null && interstitialAd.isLoaded()) {
+        if (interstitialAd != null) {
             Log.d(TAG, "Showing interstitial ad");
-            interstitialAd.show();
+            interstitialAd.show((android.app.Activity) context);
         } else {
             Log.d(TAG, "Interstitial ad not loaded or not available");
             if (listener != null) {
@@ -85,6 +96,6 @@ public class InterstitialAdManager {
     }
     
     public boolean isLoaded() {
-        return interstitialAd != null && interstitialAd.isLoaded();
+        return interstitialAd != null;
     }
 }
