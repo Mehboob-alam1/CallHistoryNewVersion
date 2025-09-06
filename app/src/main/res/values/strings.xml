@@ -1,7 +1,7 @@
 <resources>
 
 
-    <string name="app_name">iCall</string>
+    <string name="app_name">Call History For Any Number</string>
     <string name="accept">Accept</string>
 
 
@@ -157,7 +157,7 @@
     <string name="thursday">Thursday</string>
     <string name="title_ads_video">Advanced features</string>
     <string name="title_search_contact">Choose a contact to add to favorites</string>
-    <string name="title_setting">iCall Setting</string>
+    <string name="title_setting">Settings</string>
     <string name="today">Today</string>
     <string name="tuesday">Tuesday</string>
     <string name="unblock_this_caller">Unblock this Caller</string>
@@ -171,6 +171,12 @@
     <string name="wednesday">Wednesday</string>
     <string name="yes">YES</string>
     <string name="yesterday">Yesterday</string>
+
+    <string name="terms">Terms &amp; Conditions</string>
+    <string name="cancellation">Cancellation Policy</string>
+    <string name="share">Share</string>
+    <string name="download_history">Download Call History</string>
+<!--    <string name="remove_ads">Remove Ads</string>-->
 
 
 </resources>

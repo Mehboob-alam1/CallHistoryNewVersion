@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.callos16.callscreen.colorphone.custom.LayoutListSim
+    <com.easyrank.dialers.custom.LayoutListSim
         android:id="@+id/ll_sim"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

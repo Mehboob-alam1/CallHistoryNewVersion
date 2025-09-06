@@ -3,9 +3,10 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 36
-    namespace 'com.callos16.callscreen.colorphone'
+    namespace 'com.easyrank.dialers'
     defaultConfig {
-        applicationId "com.callos16.callscreen.colorphone"
+        // applicationId "com.callos16.callscreen.colorphone"
+        applicationId "com.easyrank.dialers"
         minSdkVersion 23
         targetSdkVersion 34
         versionCode 1

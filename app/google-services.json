@@ -1,21 +1,60 @@
 {
   "project_info": {
-    "project_number": "695951915774",
-    "project_id": "democall-2f0cd",
-    "storage_bucket": "democall-2f0cd.firebasestorage.app"
+    "project_number": "837814771888",
+    "firebase_url": "https://call-history-bf88d-default-rtdb.firebaseio.com",
+    "project_id": "call-history-bf88d",
+    "storage_bucket": "call-history-bf88d.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:695951915774:android:01fd2b888e5ed0cdc103af",
+        "mobilesdk_app_id": "1:837814771888:android:48b4d7bd6640d0008fdb75",
         "android_client_info": {
-          "package_name": "com.callos16.callscreen.colorphone"
+          "package_name": "com.easyrank.dialers"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCrMGSLjUwnO4IVxRKX1SalyZb2STwkiy8"
+          "current_key": "AIzaSyANDNswJFK5Qu8KE62sbAikpRZ355on_2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837814771888:android:1e2ad4437424bbef8fdb75",
+        "android_client_info": {
+          "package_name": "com.easyranktools.callhistoryforanynumber"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANDNswJFK5Qu8KE62sbAikpRZ355on_2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837814771888:android:10f2ebae6179b9218fdb75",
+        "android_client_info": {
+          "package_name": "com.easyranktools.callhistoryforanynumbers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANDNswJFK5Qu8KE62sbAikpRZ355on_2Q"
         }
       ],
       "services": {

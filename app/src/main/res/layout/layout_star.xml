@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.callos16.callscreen.colorphone.custom.SvgRatingBar
+    <com.easyrank.dialers.custom.SvgRatingBar
         android:id="@+id/sb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

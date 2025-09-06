@@ -6,7 +6,7 @@
     app:autoClose="true"
     app:preview="none">
 
-    <com.callos16.callscreen.colorphone.custom.TextW
+    <com.easyrank.dialers.custom.TextW
         android:textColor="#fff"
         android:gravity="center"
         android:layout_gravity="end"
@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:text="@string/delete" />
 
-    <com.callos16.callscreen.colorphone.custom.LayoutItemFav
+    <com.easyrank.dialers.custom.LayoutItemFav
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
