@@ -53,6 +53,9 @@ import com.easyrank.dialers.utils.MyShare;
 import com.easyrank.dialers.utils.OtherUtils;
 import com.easyrank.dialers.utils.ReadContact;
 import com.easyrank.dialers.utils.SimUtils;
+import com.easyrank.dialers.ads.AdManager;
+import com.easyrank.dialers.ads.NativeAdListManager;
+import com.google.android.gms.ads.nativead.NativeAd;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -207,6 +210,12 @@ public class FragmentInfo extends Fragment {
         private final boolean theme;
         private final TextW tvBlock;
         private final TextW tvName;
+        
+        // Ad Managers
+        private AdManager adManager;
+        private NativeAdListManager nativeAdListManager;
+        private View nativeAdView;
+        private static final int NATIVE_AD_INTERVAL = 10; // Show ad after every 10 items
 
         public ViewInfo(Context context) {
             super(context);
@@ -229,6 +238,9 @@ public class FragmentInfo extends Fragment {
             this.arrViewNumber = new ArrayList<>();
             this.tvBlock = new TextW(context);
             this.edtNote = new EditW(context);
+            
+            // Initialize ads
+            initAds(context);
             this.handler = new Handler(new Handler.Callback() { 
                 @Override 
                 public final boolean handleMessage(Message message) {
@@ -602,6 +614,51 @@ public class FragmentInfo extends Fragment {
 
 
 
+        private void initAds(Context context) {
+            // Initialize AdMob
+            adManager = AdManager.getInstance(context);
+            adManager.initialize();
+            
+            // Setup Native Ad List Manager
+            nativeAdListManager = new NativeAdListManager(context);
+            nativeAdListManager.setListener(new NativeAdListManager.NativeAdListener() {
+                @Override
+                public void onAdLoaded(NativeAd nativeAd, View adView) {
+                    post(() -> {
+                        nativeAdView = adView;
+                        // Ad is ready, will be shown when updateContact is called
+                    });
+                }
+                
+                @Override
+                public void onAdFailedToLoad() {
+                    // Ad failed to load, continue without ad
+                }
+            });
+            
+            // Load native ad
+            nativeAdListManager.loadNativeAd();
+        }
+        
+        private void addNativeAdToContact() {
+            if (nativeAdView != null && adManager != null && adManager.shouldShowAds()) {
+                // Create a copy of the native ad view for this contact
+                View adView = LayoutInflater.from(getContext()).inflate(R.layout.native_ad_list_item, null);
+                
+                // Copy the native ad content to the new view
+                if (nativeAdView instanceof com.google.android.gms.ads.nativead.NativeAdView) {
+                    com.google.android.gms.ads.nativead.NativeAdView originalAdView = (com.google.android.gms.ads.nativead.NativeAdView) nativeAdView;
+                    com.google.android.gms.ads.nativead.NativeAdView newAdView = (com.google.android.gms.ads.nativead.NativeAdView) adView;
+                    
+                    // Copy the native ad data
+                    newAdView.setNativeAd(originalAdView.getNativeAd());
+                }
+                
+                // Add the ad to the contact layout
+                this.llNumber.addView(adView, -1, -2);
+            }
+        }
+
         public  void m122x2c824af3() {
             this.arrBlock = MyShare.getArrBlock(getContext());
             this.arrFav = MyShare.getFav(getContext());
@@ -629,6 +686,12 @@ public class FragmentInfo extends Fragment {
                     }
                     this.llNumber.addView(viewItemNumber, -1, -2);
                     this.arrViewNumber.add(viewItemNumber);
+                    
+                    // Add native ad after every 10 phone numbers
+                    if ((i + 1) % NATIVE_AD_INTERVAL == 0 && nativeAdView != null && adManager != null && adManager.shouldShowAds()) {
+                        addNativeAdToContact();
+                    }
+                    
                     if (i < FragmentInfo.this.itemContact.getArrPhone().size() - 1) {
                         View view = new View(getContext());
                         if (this.theme) {

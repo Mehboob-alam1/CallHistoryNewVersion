@@ -373,7 +373,8 @@ public class FragmentSetting extends Fragment {
             if (scrollView != null) {
                 LinearLayout contentLayout = (LinearLayout) scrollView.getChildAt(0);
                 if (contentLayout != null) {
-                    // Add ad after the title (index 1)
+                    // Add ad after every 10 settings items
+                    // For now, add it after the title (index 1) - this can be enhanced later
                     contentLayout.addView(adView, 1);
                 }
             }

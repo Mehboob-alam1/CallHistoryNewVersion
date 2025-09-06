@@ -21,6 +21,7 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final boolean theme;
     private View nativeAdView;
     private boolean hasNativeAd = false;
+    private static final int NATIVE_AD_INTERVAL = 10; // Show ad after every 10 items
 
     
     public interface ContactResult {
@@ -38,11 +39,24 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override 
     public int getItemViewType(int i) {
-        if (hasNativeAd && i == 0) {
+        if (hasNativeAd && shouldShowNativeAdAtPosition(i)) {
             return 2; // Native ad type
         }
-        int adjustedIndex = hasNativeAd ? i - 1 : i;
+        int adjustedIndex = getAdjustedIndex(i);
         return this.arrFilter.get(adjustedIndex).alphaB != null ? 1 : 0;
+    }
+    
+    private boolean shouldShowNativeAdAtPosition(int position) {
+        if (!hasNativeAd) return false;
+        // Show native ad after every 10 items (at positions 10, 20, 30, etc.)
+        return (position + 1) % (NATIVE_AD_INTERVAL + 1) == 0;
+    }
+    
+    private int getAdjustedIndex(int position) {
+        if (!hasNativeAd) return position;
+        // Count how many native ads appear before this position
+        int nativeAdCount = (position + 1) / (NATIVE_AD_INTERVAL + 1);
+        return position - nativeAdCount;
     }
 
     @Override 
@@ -62,7 +76,7 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
             // Native ad doesn't need binding
             return;
         }
-        int adjustedIndex = hasNativeAd ? i - 1 : i;
+        int adjustedIndex = getAdjustedIndex(i);
         if (viewHolder instanceof HolderAlphaB) {
             ((HolderAlphaB) viewHolder).viewAlphaB.setAlphaB(this.arrFilter.get(adjustedIndex).alphaB);
         } else {
@@ -72,7 +86,10 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override 
     public int getItemCount() {
-        return this.arrFilter.size() + (hasNativeAd ? 1 : 0);
+        if (!hasNativeAd) return this.arrFilter.size();
+        // Calculate how many native ads should be shown
+        int nativeAdCount = this.arrFilter.size() / NATIVE_AD_INTERVAL;
+        return this.arrFilter.size() + nativeAdCount;
     }
 
     public void filter(String str) {
@@ -141,7 +158,10 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
         while (it.hasNext()) {
             ItemShowContact next = it.next();
             if (next.alphaB != null && next.alphaB.equalsIgnoreCase(str)) {
-                return this.arrFilter.indexOf(next) + (hasNativeAd ? 1 : 0);
+                int originalIndex = this.arrFilter.indexOf(next);
+                // Adjust for native ads that appear before this position
+                int nativeAdCount = originalIndex / NATIVE_AD_INTERVAL;
+                return originalIndex + nativeAdCount;
             }
         }
         return -1;
@@ -150,13 +170,13 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void addNativeAd(View adView) {
         this.nativeAdView = adView;
         this.hasNativeAd = true;
-        notifyItemInserted(0);
+        notifyDataSetChanged();
     }
     
     public void removeNativeAd() {
         this.hasNativeAd = false;
         this.nativeAdView = null;
-        notifyItemRemoved(0);
+        notifyDataSetChanged();
     }
 
     

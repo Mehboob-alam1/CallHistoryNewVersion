@@ -28,6 +28,7 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private final boolean theme;
     private View nativeAdView;
     private boolean hasNativeAd = false;
+    private static final int NATIVE_AD_INTERVAL = 10; // Show ad after every 10 items
 
     
     public interface RecentItemClick {
@@ -42,10 +43,30 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override 
     public int getItemViewType(int i) {
-        if (hasNativeAd && i == 1) {
+        if (i == 0) return 0; // Header
+        
+        if (hasNativeAd && shouldShowNativeAdAtPosition(i)) {
             return 2; // Native ad type
         }
-        return i == 0 ? 0 : 1;
+        return 1; // Recent item
+    }
+    
+    private boolean shouldShowNativeAdAtPosition(int position) {
+        if (!hasNativeAd) return false;
+        // Show native ad after every 10 items (at positions 11, 21, 31, etc.)
+        // Position 0 is header, so we check position - 1 for recent items
+        int recentItemPosition = position - 1;
+        return recentItemPosition > 0 && recentItemPosition % NATIVE_AD_INTERVAL == 0;
+    }
+    
+    private int getAdjustedIndex(int position) {
+        if (position == 0) return -1; // Header
+        if (!hasNativeAd) return position - 1;
+        
+        // Count how many native ads appear before this position
+        int recentItemPosition = position - 1;
+        int nativeAdCount = recentItemPosition / NATIVE_AD_INTERVAL;
+        return recentItemPosition - nativeAdCount;
     }
 
     public AdapterRecent(ArrayList<ItemRecentGroup> arrayList, ArrayList<ItemSimInfo> arrayList2, boolean z, RecentItemClick recentItemClick) {
@@ -108,13 +129,13 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void addNativeAd(View adView) {
         this.nativeAdView = adView;
         this.hasNativeAd = true;
-        notifyItemInserted(1);
+        notifyDataSetChanged();
     }
     
     public void removeNativeAd() {
         this.hasNativeAd = false;
         this.nativeAdView = null;
-        notifyItemRemoved(1);
+        notifyDataSetChanged();
     }
 
     @Override 
@@ -137,7 +158,7 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (viewHolder instanceof HolderItem) {
             HolderItem holderItem = (HolderItem) viewHolder;
             int i2 = -1;
-            int adjustedIndex = hasNativeAd ? i - 2 : i - 1;
+            int adjustedIndex = getAdjustedIndex(i);
             ItemRecentGroup itemRecentGroup = this.arrShow.get(adjustedIndex);
             String str = itemRecentGroup.arrRecent.get(0).simId;
             if (this.arrSim.size() > 1 && str != null && !str.isEmpty()) {
@@ -165,7 +186,11 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override 
     public int getItemCount() {
-        return this.arrShow.size() + 1 + (hasNativeAd ? 1 : 0);
+        if (!hasNativeAd) return this.arrShow.size() + 1; // +1 for header
+        
+        // Calculate how many native ads should be shown
+        int nativeAdCount = this.arrShow.size() / NATIVE_AD_INTERVAL;
+        return this.arrShow.size() + 1 + nativeAdCount; // +1 for header
     }
 
     
