@@ -73,22 +73,39 @@ public class NativeAdListManager {
     }
     
     private View createNativeAdView(NativeAd nativeAd) {
-        NativeAdView adView = (NativeAdView) LayoutInflater.from(context).inflate(R.layout.native_ad_list_item, null);
-        populateNativeAdView(nativeAd, adView);
-        return adView;
+        Log.d(TAG, "Creating native ad view...");
+        try {
+            NativeAdView adView = (NativeAdView) LayoutInflater.from(context).inflate(R.layout.native_ad_list_item, null);
+            Log.d(TAG, "Native ad view created successfully");
+            populateNativeAdView(nativeAd, adView);
+            return adView;
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating native ad view: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
     
     private void populateNativeAdView(NativeAd nativeAd, NativeAdView adView) {
-        // Set the icon view
-        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
-        
-        // Set other assets
-        adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
-        adView.setBodyView(adView.findViewById(R.id.ad_body));
-        adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
-        adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
-        
-        // Populate the native ad view
-        adView.setNativeAd(nativeAd);
+        Log.d(TAG, "Populating native ad view...");
+        try {
+            // Set the icon view
+            adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+            
+            // Set other assets
+            adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+            adView.setBodyView(adView.findViewById(R.id.ad_body));
+            adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+            adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+            
+            Log.d(TAG, "Native ad view populated successfully");
+            
+            // Populate the native ad view
+            adView.setNativeAd(nativeAd);
+            Log.d(TAG, "Native ad set to view successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error populating native ad view: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

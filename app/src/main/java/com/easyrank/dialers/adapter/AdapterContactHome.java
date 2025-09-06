@@ -68,23 +68,32 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        Log.d("AdapterContactHome", "onCreateViewHolder called with viewType: " + i);
         if (i == 2) {
+            Log.d("AdapterContactHome", "Creating native ad ViewHolder");
             // Create a new native ad view for each ViewHolder
             View adView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.native_ad_list_item, viewGroup, false);
             return new HolderNativeAd(adView);
         }
         if (i == 1) {
+            Log.d("AdapterContactHome", "Creating alpha B ViewHolder");
             return new HolderAlphaB(new ViewAlphaB(viewGroup.getContext()));
         }
+        Log.d("AdapterContactHome", "Creating contact ViewHolder");
         return new HolderContact(new ViewListContact(viewGroup.getContext()));
     }
 
     @Override 
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        Log.d("AdapterContactHome", "onBindViewHolder called for position: " + i);
         if (viewHolder instanceof HolderNativeAd) {
+            Log.d("AdapterContactHome", "Binding native ad ViewHolder");
             // Populate the native ad view with the loaded ad
             if (nativeAd != null) {
+                Log.d("AdapterContactHome", "Native ad is not null, populating view");
                 populateNativeAdView(nativeAd, (com.google.android.gms.ads.nativead.NativeAdView) viewHolder.itemView);
+            } else {
+                Log.d("AdapterContactHome", "Native ad is null, cannot populate view");
             }
             return;
         }
@@ -203,17 +212,26 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
     
     private void populateNativeAdView(com.google.android.gms.ads.nativead.NativeAd nativeAd, com.google.android.gms.ads.nativead.NativeAdView adView) {
-        // Set the icon view
-        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
-        
-        // Set other assets
-        adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
-        adView.setBodyView(adView.findViewById(R.id.ad_body));
-        adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
-        adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
-        
-        // Populate the native ad view
-        adView.setNativeAd(nativeAd);
+        Log.d("AdapterContactHome", "populateNativeAdView called in adapter");
+        try {
+            // Set the icon view
+            adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+            
+            // Set other assets
+            adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+            adView.setBodyView(adView.findViewById(R.id.ad_body));
+            adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+            adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+            
+            Log.d("AdapterContactHome", "Native ad view populated in adapter");
+            
+            // Populate the native ad view
+            adView.setNativeAd(nativeAd);
+            Log.d("AdapterContactHome", "Native ad set to view in adapter");
+        } catch (Exception e) {
+            Log.e("AdapterContactHome", "Error populating native ad view in adapter: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     

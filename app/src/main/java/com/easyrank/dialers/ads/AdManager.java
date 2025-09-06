@@ -16,11 +16,10 @@ public class AdManager {
     private static final String PREFS_NAME = "ad_preferences";
     private static final String KEY_ADS_REMOVED = "ads_removed";
     
-    // REAL Ad Unit IDs - Replace these with your actual AdMob Ad Unit IDs
-    // Get these from your AdMob dashboard: https://apps.admob.com/
+    // REAL Ad Unit IDs - Your actual AdMob Ad Unit IDs
     private static final String BANNER_AD_UNIT_ID = "ca-app-pub-8028241846578443/1234567890"; // TODO: Replace with your real Banner Ad Unit ID
     private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-8028241846578443/1234567891"; // TODO: Replace with your real Interstitial Ad Unit ID  
-    private static final String NATIVE_AD_UNIT_ID = "ca-app-pub-8028241846578443/1234567892"; // TODO: Replace with your real Native Ad Unit ID
+    private static final String NATIVE_AD_UNIT_ID = "ca-app-pub-8028241846578443/6776895718"; // Your real Native Ad Unit ID
     
     // Test Ad Unit IDs (for testing only)
     private static final String TEST_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111";
@@ -28,7 +27,7 @@ public class AdManager {
     private static final String TEST_NATIVE_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110";
     
     // Set to true for testing, false for production
-    private static final boolean USE_TEST_ADS = true;
+    private static final boolean USE_TEST_ADS = false;
     
     private static AdManager instance;
     private Context context;
