@@ -26,6 +26,8 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private boolean isMiss;
     private final RecentItemClick recentItemClick;
     private final boolean theme;
+    private View nativeAdView;
+    private boolean hasNativeAd = false;
 
     
     public interface RecentItemClick {
@@ -40,6 +42,9 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override 
     public int getItemViewType(int i) {
+        if (hasNativeAd && i == 1) {
+            return 2; // Native ad type
+        }
         return i == 0 ? 0 : 1;
     }
 
@@ -99,9 +104,24 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public boolean isChoose() {
         return this.isChoose;
     }
+    
+    public void addNativeAd(View adView) {
+        this.nativeAdView = adView;
+        this.hasNativeAd = true;
+        notifyItemInserted(1);
+    }
+    
+    public void removeNativeAd() {
+        this.hasNativeAd = false;
+        this.nativeAdView = null;
+        notifyItemRemoved(1);
+    }
 
     @Override 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        if (i == 2) {
+            return new HolderNativeAd(nativeAdView);
+        }
         if (i == 0) {
             return new HolderTop(new LayoutItemTopRecent(viewGroup.getContext()));
         }
@@ -110,10 +130,15 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override 
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        if (viewHolder instanceof HolderNativeAd) {
+            // Native ad doesn't need binding
+            return;
+        }
         if (viewHolder instanceof HolderItem) {
             HolderItem holderItem = (HolderItem) viewHolder;
             int i2 = -1;
-            ItemRecentGroup itemRecentGroup = this.arrShow.get(i - 1);
+            int adjustedIndex = hasNativeAd ? i - 2 : i - 1;
+            ItemRecentGroup itemRecentGroup = this.arrShow.get(adjustedIndex);
             String str = itemRecentGroup.arrRecent.get(0).simId;
             if (this.arrSim.size() > 1 && str != null && !str.isEmpty()) {
                 int i3 = 0;
@@ -140,9 +165,15 @@ public class AdapterRecent extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override 
     public int getItemCount() {
-        return this.arrShow.size() + 1;
+        return this.arrShow.size() + 1 + (hasNativeAd ? 1 : 0);
     }
 
+    
+    class HolderNativeAd extends RecyclerView.ViewHolder {
+        public HolderNativeAd(View view) {
+            super(view);
+        }
+    }
     
     class HolderTop extends RecyclerView.ViewHolder {
         public HolderTop(LayoutItemTopRecent layoutItemTopRecent) {

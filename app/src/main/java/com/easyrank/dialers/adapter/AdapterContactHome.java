@@ -19,6 +19,8 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final ArrayList<ItemShowContact> arrFilter = new ArrayList<>();
     private final ContactResult contactResult;
     private final boolean theme;
+    private View nativeAdView;
+    private boolean hasNativeAd = false;
 
     
     public interface ContactResult {
@@ -36,11 +38,18 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override 
     public int getItemViewType(int i) {
-        return this.arrFilter.get(i).alphaB != null ? 1 : 0;
+        if (hasNativeAd && i == 0) {
+            return 2; // Native ad type
+        }
+        int adjustedIndex = hasNativeAd ? i - 1 : i;
+        return this.arrFilter.get(adjustedIndex).alphaB != null ? 1 : 0;
     }
 
     @Override 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        if (i == 2) {
+            return new HolderNativeAd(nativeAdView);
+        }
         if (i == 1) {
             return new HolderAlphaB(new ViewAlphaB(viewGroup.getContext()));
         }
@@ -49,16 +58,21 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override 
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        if (viewHolder instanceof HolderNativeAd) {
+            // Native ad doesn't need binding
+            return;
+        }
+        int adjustedIndex = hasNativeAd ? i - 1 : i;
         if (viewHolder instanceof HolderAlphaB) {
-            ((HolderAlphaB) viewHolder).viewAlphaB.setAlphaB(this.arrFilter.get(i).alphaB);
+            ((HolderAlphaB) viewHolder).viewAlphaB.setAlphaB(this.arrFilter.get(adjustedIndex).alphaB);
         } else {
-            ((HolderContact) viewHolder).vContact.setContact(this.arrFilter.get(i).itemContact, this.theme);
+            ((HolderContact) viewHolder).vContact.setContact(this.arrFilter.get(adjustedIndex).itemContact, this.theme);
         }
     }
 
     @Override 
     public int getItemCount() {
-        return this.arrFilter.size();
+        return this.arrFilter.size() + (hasNativeAd ? 1 : 0);
     }
 
     public void filter(String str) {
@@ -127,12 +141,30 @@ public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHo
         while (it.hasNext()) {
             ItemShowContact next = it.next();
             if (next.alphaB != null && next.alphaB.equalsIgnoreCase(str)) {
-                return this.arrFilter.indexOf(next);
+                return this.arrFilter.indexOf(next) + (hasNativeAd ? 1 : 0);
             }
         }
         return -1;
     }
+    
+    public void addNativeAd(View adView) {
+        this.nativeAdView = adView;
+        this.hasNativeAd = true;
+        notifyItemInserted(0);
+    }
+    
+    public void removeNativeAd() {
+        this.hasNativeAd = false;
+        this.nativeAdView = null;
+        notifyItemRemoved(0);
+    }
 
+    
+    class HolderNativeAd extends RecyclerView.ViewHolder {
+        public HolderNativeAd(View view) {
+            super(view);
+        }
+    }
     
     class HolderAlphaB extends RecyclerView.ViewHolder {
         ViewAlphaB viewAlphaB;

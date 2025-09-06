@@ -363,8 +363,20 @@ public class FragmentSetting extends Fragment {
             // Add native ad as a settings item
             nativeAdView = adView;
             
-            // Add the ad as a settings item (we'll add it after the title)
-            // This will be handled in the initView method
+            // Add the ad as a settings item in the scroll view
+            if (adView.getParent() != null) {
+                ((ViewGroup) adView.getParent()).removeView(adView);
+            }
+            
+            // Find the scroll view and add the ad
+            ScrollView scrollView = (ScrollView) getChildAt(1); // Second child is scroll view
+            if (scrollView != null) {
+                LinearLayout contentLayout = (LinearLayout) scrollView.getChildAt(0);
+                if (contentLayout != null) {
+                    // Add ad after the title (index 1)
+                    contentLayout.addView(adView, 1);
+                }
+            }
         }
         
         private void showInterstitialAdForSettingsClick(Runnable action) {
