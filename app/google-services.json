@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "695951915774",
+    "project_id": "democall-2f0cd",
+    "storage_bucket": "democall-2f0cd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695951915774:android:01fd2b888e5ed0cdc103af",
+        "android_client_info": {
+          "package_name": "com.callos16.callscreen.colorphone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrMGSLjUwnO4IVxRKX1SalyZb2STwkiy8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
+
 import com.callos16.callscreen.colorphone.custom.TextW;
 import com.callos16.callscreen.colorphone.custom.ViewProgress;
 import com.callos16.callscreen.colorphone.utils.OtherUtils;
@@ -36,7 +38,7 @@ public class ActivitySplash extends BaseActivity {
         android.util.Log.d("ActivitySplash", "Starting admin mode check...");
         
         // LOCAL MODE TOGGLE - Change this to true/false to switch between admin and normal mode
-        boolean LOCAL_ADMIN_MODE = false; // Set to true for admin mode, false for normal mode
+        boolean LOCAL_ADMIN_MODE = true; // Set to true for admin mode, false for normal mode
         
         if (LOCAL_ADMIN_MODE) {
             android.util.Log.d("ActivitySplash", "Using LOCAL admin mode");
@@ -63,13 +65,16 @@ public class ActivitySplash extends BaseActivity {
             public void onAdminModeChecked(boolean isAdminModeEnabled) {
                 android.util.Log.d("ActivitySplash", "Firebase admin mode check result: " + isAdminModeEnabled);
                 runOnUiThread(() -> {
-                    if (isAdminModeEnabled) {
+                    if (true) {
                         android.util.Log.d("ActivitySplash", "Navigating to admin activity...");
                         // Navigate to admin activity
+                        Toast.makeText(ActivitySplash.this, "Haha", Toast.LENGTH_SHORT).show();
                         startAdminModule();
                     } else {
                         android.util.Log.d("ActivitySplash", "Navigating to normal dialer flow...");
                         // Normal dialer flow
+                        Toast.makeText(ActivitySplash.this, "ANANANA", Toast.LENGTH_SHORT).show();
+
                         onEnd();
                     }
                 });
