@@ -22,7 +22,7 @@
             android:layout_height="40dp"
             android:src="@drawable/loading" />
 
-        <com.easyrank.dialers.custom.TextW
+        <com.easyranktools.easyranktools.custom.TextW
             android:textSize="14sp"
             android:textColor="#000"
             android:id="@+id/tv_dialog"

@@ -26,24 +26,27 @@
     <string name="call_ending">Call Ending</string>
     <string name="call_is_blocked">Call is blocked</string>
     <string name="call_is_canceled">Call is canceled</string>
-    <string name="call_pro">iCall Pro</string>
-    <string name="call_screen">iCall OS16</string>
+    <string name="call_pro">Call History For Any Number</string>
+    <string name="call_screen">Call History For Any Number</string>
     <string name="call_up">Call</string>
     <string name="cancel">Cancel</string>
     <string name="change_theme">Change Theme</string>
     <string name="change_wallpaper">Change Wallpaper</string>
     <string name="choose_sim">Select sim for this call</string>
     <string name="contacts">Contacts</string>
+    <string name="contact_us">Contact us</string>
     <string name="content_ads_video">To use this feature, please upgrade to the paid version or watch a rewarded ad.</string>
     <string name="content_block">You will receive phone calls from people on the block list.</string>
     <string name="continue_pro">Continue</string>
+    <string name="contact_chooser_title">Send email via</string>
+    <string name="no_email_app">No email client installed</string>
     <string name="copy">Copy Number</string>
     <string name="copy_toast_msg">Link copied to clipboard</string>
     <string name="custom">Custom</string>
     <string name="custom_lock">Customizable Lock</string>
     <string name="dark_themes">Dark Themes</string>
     <string name="decline">Decline</string>
-    <string name="default_content">iCall can only start &amp; receive calls if it\'s your default phone app</string>
+    <string name="default_content">Call History For Any Number can only start &amp; receive calls if it\'s your default phone app</string>
     <string name="default_phone_app_prompt">Please make this app the default Phone app</string>
     <string name="delete">Delete</string>
     <string name="delete_all_recents">Delete all recent calls?</string>
@@ -120,7 +123,7 @@
     <string name="outgoing_call">Outgoing call</string>
     <string name="per_content">The app needs the following permissions to work: Read contacts, Read call logs, Call phone</string>
     <string name="permission">Permission</string>
-    <string name="phone_default">Set iCall as default</string>
+    <string name="phone_default">Set Call History For Any Number as default</string>
     <string name="play">Play</string>
     <string name="policy">Privacy Policy</string>
     <string name="premium">Premium</string>
@@ -176,7 +179,7 @@
     <string name="cancellation">Cancellation Policy</string>
     <string name="share">Share</string>
     <string name="download_history">Download Call History</string>
-<!--    <string name="remove_ads">Remove Ads</string>-->
+    <!--    <string name="remove_ads">Remove Ads</string>-->
 
 
 </resources>

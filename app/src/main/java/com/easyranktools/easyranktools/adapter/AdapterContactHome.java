@@ -1,0 +1,292 @@
+package com.easyranktools.easyranktools.adapter;
+
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import androidx.recyclerview.widget.RecyclerView;
+
+
+import com.easyranktools.callhistoryforanynumber.R;
+import com.easyranktools.easyranktools.custom.ViewAlphaB;
+import com.easyranktools.easyranktools.custom.ViewListContact;
+import com.easyranktools.easyranktools.item.ItemContact;
+import com.easyranktools.easyranktools.item.ItemPhone;
+import com.easyranktools.easyranktools.item.ItemShowContact;
+import com.easyranktools.easyranktools.utils.OtherUtils;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+
+public class AdapterContactHome extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private final ArrayList<ItemContact> arrContact;
+    private final ArrayList<ItemShowContact> arrFilter = new ArrayList<>();
+    private final ContactResult contactResult;
+    private final boolean theme;
+    private View nativeAdView;
+    private com.google.android.gms.ads.nativead.NativeAd nativeAd;
+    private boolean hasNativeAd = false;
+    private static final int NATIVE_AD_INTERVAL = 10; // Show ad after every 10 items
+
+    
+    public interface ContactResult {
+        void onItemClick(ItemContact itemContact);
+
+        void onLongClick(ItemContact itemContact);
+    }
+
+    public AdapterContactHome(ArrayList<ItemContact> arrayList, boolean z, ContactResult contactResult) {
+        this.arrContact = arrayList;
+        this.contactResult = contactResult;
+        this.theme = z;
+        makeArr("");
+    }
+
+    @Override 
+    public int getItemViewType(int i) {
+        boolean shouldShowAd = hasNativeAd && shouldShowNativeAdAtPosition(i);
+        Log.d("AdapterContactHome", "getItemViewType position: " + i + ", shouldShowAd: " + shouldShowAd + ", hasNativeAd: " + hasNativeAd);
+        
+        if (shouldShowAd) {
+            Log.d("AdapterContactHome", "Returning native ad type (2) for position: " + i);
+            return 2; // Native ad type
+        }
+        int adjustedIndex = getAdjustedIndex(i);
+        int viewType = this.arrFilter.get(adjustedIndex).alphaB != null ? 1 : 0;
+        Log.d("AdapterContactHome", "Returning view type: " + viewType + " for position: " + i);
+        return viewType;
+    }
+    
+    private boolean shouldShowNativeAdAtPosition(int position) {
+        if (!hasNativeAd) return false;
+        // Show native ad after every 10 items (at positions 10, 20, 30, etc.)
+        return (position + 1) % (NATIVE_AD_INTERVAL + 1) == 0;
+    }
+    
+    private int getAdjustedIndex(int position) {
+        if (!hasNativeAd) return position;
+        // Count how many native ads appear before this position
+        int nativeAdCount = (position + 1) / (NATIVE_AD_INTERVAL + 1);
+        return position - nativeAdCount;
+    }
+
+    @Override 
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        Log.d("AdapterContactHome", "onCreateViewHolder called with viewType: " + i);
+        if (i == 2) {
+            Log.d("AdapterContactHome", "Creating native ad ViewHolder");
+            // Create a new native ad view for each ViewHolder
+            View adView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.native_ad_list_item, viewGroup, false);
+            return new HolderNativeAd(adView);
+        }
+        if (i == 1) {
+            Log.d("AdapterContactHome", "Creating alpha B ViewHolder");
+            return new HolderAlphaB(new ViewAlphaB(viewGroup.getContext()));
+        }
+        Log.d("AdapterContactHome", "Creating contact ViewHolder");
+        return new HolderContact(new ViewListContact(viewGroup.getContext()));
+    }
+
+    @Override 
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+        Log.d("AdapterContactHome", "onBindViewHolder called for position: " + i);
+        if (viewHolder instanceof HolderNativeAd) {
+            Log.d("AdapterContactHome", "Binding native ad ViewHolder");
+            // Populate the native ad view with the loaded ad
+            if (nativeAd != null) {
+                Log.d("AdapterContactHome", "Native ad is not null, populating view");
+                populateNativeAdView(nativeAd, (com.google.android.gms.ads.nativead.NativeAdView) viewHolder.itemView);
+            } else {
+                Log.d("AdapterContactHome", "Native ad is null, cannot populate view");
+            }
+            return;
+        }
+        int adjustedIndex = getAdjustedIndex(i);
+        if (viewHolder instanceof HolderAlphaB) {
+            ((HolderAlphaB) viewHolder).viewAlphaB.setAlphaB(this.arrFilter.get(adjustedIndex).alphaB);
+        } else {
+            ((HolderContact) viewHolder).vContact.setContact(this.arrFilter.get(adjustedIndex).itemContact, this.theme);
+        }
+    }
+
+    @Override 
+    public int getItemCount() {
+        if (!hasNativeAd) return this.arrFilter.size();
+        // Calculate how many native ads should be shown
+        int nativeAdCount = this.arrFilter.size() / NATIVE_AD_INTERVAL;
+        return this.arrFilter.size() + nativeAdCount;
+    }
+
+    public void filter(String str) {
+        makeArr(str);
+        notifyDataSetChanged();
+    }
+
+    private void makeArr(String str) {
+        if (str.isEmpty()) {
+            addData(this.arrContact);
+            return;
+        }
+        ArrayList<ItemContact> arrayList = new ArrayList<>();
+        Iterator<ItemContact> it = this.arrContact.iterator();
+        while (it.hasNext()) {
+            ItemContact next = it.next();
+            if (next.getName() != null && next.getName().toLowerCase().contains(str)) {
+                arrayList.add(next);
+            } else if (next.getArrPhone() != null && !next.getArrPhone().isEmpty()) {
+                Iterator<ItemPhone> it2 = next.getArrPhone().iterator();
+                while (true) {
+                    if (it2.hasNext()) {
+                        ItemPhone next2 = it2.next();
+                        if (next2.getNumber() != null && next2.getNumber().toLowerCase().contains(str)) {
+                            arrayList.add(next);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        addData(arrayList);
+    }
+
+    private void addData(ArrayList<ItemContact> arrayList) {
+        this.arrFilter.clear();
+        if (arrayList == null || arrayList.isEmpty()) {
+            return;
+        }
+        String[] arrAlphaB = OtherUtils.arrAlphaB();
+        int i = -1;
+        Iterator<ItemContact> it = arrayList.iterator();
+        while (it.hasNext()) {
+            ItemContact next = it.next();
+            int posAlphaB = getPosAlphaB(arrAlphaB, next.getName());
+            if (i != posAlphaB) {
+                this.arrFilter.add(new ItemShowContact(arrAlphaB[posAlphaB]));
+                i = posAlphaB;
+            }
+            this.arrFilter.add(new ItemShowContact(next));
+        }
+    }
+
+    private int getPosAlphaB(String[] strArr, String str) {
+        String substring = (str == null || str.isEmpty()) ? "#" : str.substring(0, 1);
+        for (int i = 0; i < strArr.length; i++) {
+            if (strArr[i].equalsIgnoreCase(substring)) {
+                return i;
+            }
+        }
+        return strArr.length - 1;
+    }
+
+    public int getLocationAlphaB(String str) {
+        Iterator<ItemShowContact> it = this.arrFilter.iterator();
+        while (it.hasNext()) {
+            ItemShowContact next = it.next();
+            if (next.alphaB != null && next.alphaB.equalsIgnoreCase(str)) {
+                int originalIndex = this.arrFilter.indexOf(next);
+                // Adjust for native ads that appear before this position
+                int nativeAdCount = originalIndex / NATIVE_AD_INTERVAL;
+                return originalIndex + nativeAdCount;
+            }
+        }
+        return -1;
+    }
+    
+    public void addNativeAd(View adView, com.google.android.gms.ads.nativead.NativeAd nativeAd) {
+        Log.d("AdapterContactHome", "addNativeAd called");
+        Log.d("AdapterContactHome", "adView != null: " + (adView != null));
+        Log.d("AdapterContactHome", "nativeAd != null: " + (nativeAd != null));
+        
+        this.nativeAdView = adView;
+        this.nativeAd = nativeAd;
+        this.hasNativeAd = true;
+        
+        Log.d("AdapterContactHome", "hasNativeAd set to: " + hasNativeAd);
+        Log.d("AdapterContactHome", "arrFilter.size(): " + arrFilter.size());
+        Log.d("AdapterContactHome", "getItemCount(): " + getItemCount());
+        
+        notifyDataSetChanged();
+    }
+    
+    public void removeNativeAd() {
+        this.hasNativeAd = false;
+        this.nativeAdView = null;
+        this.nativeAd = null;
+        notifyDataSetChanged();
+    }
+    
+    private void populateNativeAdView(com.google.android.gms.ads.nativead.NativeAd nativeAd, com.google.android.gms.ads.nativead.NativeAdView adView) {
+        Log.d("AdapterContactHome", "populateNativeAdView called in adapter");
+        try {
+            // Set the icon view
+            adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+            
+            // Set other assets
+            adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+            adView.setBodyView(adView.findViewById(R.id.ad_body));
+            adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+            adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+            
+            Log.d("AdapterContactHome", "Native ad view populated in adapter");
+            
+            // Populate the native ad view
+            adView.setNativeAd(nativeAd);
+            Log.d("AdapterContactHome", "Native ad set to view in adapter");
+        } catch (Exception e) {
+            Log.e("AdapterContactHome", "Error populating native ad view in adapter: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    
+    class HolderNativeAd extends RecyclerView.ViewHolder {
+        public HolderNativeAd(View view) {
+            super(view);
+        }
+    }
+    
+    class HolderAlphaB extends RecyclerView.ViewHolder {
+        ViewAlphaB viewAlphaB;
+
+        public HolderAlphaB(ViewAlphaB viewAlphaB) {
+            super(viewAlphaB);
+            this.viewAlphaB = viewAlphaB;
+        }
+    }
+
+    
+    
+    public class HolderContact extends RecyclerView.ViewHolder {
+        ViewListContact vContact;
+
+        public HolderContact(ViewListContact viewListContact) {
+            super(viewListContact);
+            this.vContact = viewListContact;
+            viewListContact.setOnClickListener(new View.OnClickListener() { 
+                @Override 
+                public final void onClick(View view) {
+                    HolderContact.this.m55x8cab3be4(view);
+                }
+            });
+            viewListContact.setOnLongClickListener(new View.OnLongClickListener() { 
+                @Override 
+                public final boolean onLongClick(View view) {
+                    return HolderContact.this.m56x8d79ba65(view);
+                }
+            });
+        }
+
+        
+        
+        public  void m55x8cab3be4(View view) {
+            AdapterContactHome.this.contactResult.onItemClick(((ItemShowContact) AdapterContactHome.this.arrFilter.get(getLayoutPosition())).itemContact);
+        }
+
+        
+        
+        public  boolean m56x8d79ba65(View view) {
+            AdapterContactHome.this.contactResult.onLongClick(((ItemShowContact) AdapterContactHome.this.arrFilter.get(getLayoutPosition())).itemContact);
+            return true;
+        }
+    }
+}

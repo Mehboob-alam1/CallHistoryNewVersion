@@ -8,25 +8,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:837814771888:android:48b4d7bd6640d0008fdb75",
-        "android_client_info": {
-          "package_name": "com.easyrank.dialers"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyANDNswJFK5Qu8KE62sbAikpRZ355on_2Q"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:837814771888:android:1e2ad4437424bbef8fdb75",
         "android_client_info": {
           "package_name": "com.easyranktools.callhistoryforanynumber"

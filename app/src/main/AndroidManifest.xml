@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -26,71 +25,81 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
+        android:name="com.easyranktools.easyranktools.admin.MyApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
         android:icon="@drawable/icon200"
         android:label="@string/app_name"
         android:largeHeap="false"
-        android:name="com.easyrank.dialers.admin.MyApplication"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.ICall"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name="com.easyranktools.easyranktools.ContactUsActivity"
+            android:exported="false" />
+
         <property
             android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/gma_ad_services_config"
-            tools:replace="android:resource" />
+            tools:replace="android:resource" /> <!-- <meta-data -->
+        <!-- android:name="com.google.android.gms.ads.AD_MANAGER_APP" -->
+        <!-- android:value="true" /> -->
         <meta-data
-            android:name="com.google.android.gms.ads.AD_MANAGER_APP"
-            android:value="true" />
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8028241846578443~1962054900" />
 
         <activity
-            android:name="com.easyrank.dialers.ActivitySplash"
+            android:name="com.easyranktools.easyranktools.ActivitySplash"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.easyrank.dialers.ActivityAdmin"
+            android:name="com.easyranktools.easyranktools.ActivityAdmin"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.easyrank.dialers.ActivityMain"
+            android:name="com.easyranktools.easyranktools.ActivityMain"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.easyrank.dialers.ActivitySettings"
+            android:name="com.easyranktools.easyranktools.ActivitySettings"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.easyrank.dialers.DialerActivity"
+            android:name="com.easyranktools.easyranktools.DialerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.CALL" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="tel" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.easyrank.dialers.ActivityHome"
+            android:name="com.easyranktools.easyranktools.ActivityHome"
             android:exported="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing">
-
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="tel" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
@@ -104,20 +113,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.easyrank.dialers.ActivityApplyTheme"
+            android:name="com.easyranktools.easyranktools.ActivityApplyTheme"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.easyrank.dialers.ActivityRequestPermission"
+            android:name="com.easyranktools.easyranktools.ActivityRequestPermission"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.easyrank.dialers.ActivityFakeRingCall"
+            android:name="com.easyranktools.easyranktools.ActivityFakeRingCall"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.easyrank.dialers.ActivityPreview"
+            android:name="com.easyranktools.easyranktools.ActivityPreview"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.easyrank.dialers.ActivityCall"
+            android:name="com.easyranktools.easyranktools.ActivityCall"
             android:excludeFromRecents="true"
             android:exported="false"
             android:hardwareAccelerated="true"
@@ -125,86 +134,75 @@
             android:screenOrientation="portrait"
             android:showOnLockScreen="true" />
         <activity
-            android:name="com.easyrank.dialers.ActivityShowVideo"
+            android:name="com.easyranktools.easyranktools.ActivityShowVideo"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.easyrank.dialers.admin.RemoveAdsActivity"
+            android:name="com.easyranktools.easyranktools.admin.RemoveAdsActivity"
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
         <activity
-           android:name="com.easyrank.dialers.admin.DownloadHistoryActivity"
-           android:hardwareAccelerated="true"
-           android:screenOrientation="portrait" />
-
+            android:name="com.easyranktools.easyranktools.admin.DownloadHistoryActivity"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
-
         <activity
-            android:name=".admin.WebActivity"
+            android:name="com.easyranktools.easyranktools.admin.WebActivity"
             android:exported="false" />
         <activity
-            android:name=".admin.SuccessActivity"
-            android:exported="true" >
-
-        </activity>
+            android:name="com.easyranktools.easyranktools.admin.SuccessActivity"
+            android:exported="true"></activity>
         <activity
-            android:name=".admin.DownloadActivity"
+            android:name="com.easyranktools.easyranktools.admin.DownloadActivity"
             android:exported="false" />
         <activity
-            android:name=".admin.CallHis_ActivityStart"
+            android:name="com.easyranktools.easyranktools.admin.CallHis_ActivityStart"
             android:exported="false" />
         <activity
-            android:name=".admin.PhoneNumberActivity"
-            android:exported="false" />
-       <!-- Launcher Activity - Mode Selection -->
-
+            android:name="com.easyranktools.easyranktools.admin.PhoneNumberActivity"
+            android:exported="false" /> <!-- Launcher Activity - Mode Selection -->
         <activity
-            android:name=".admin.ModeSelectionActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".admin.AuthActivity"
+            android:name="com.easyranktools.easyranktools.admin.ModeSelectionActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".admin.MainActivity"
+            android:name="com.easyranktools.easyranktools.admin.AuthActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".admin.EnterNumberActivity"
+            android:name="com.easyranktools.easyranktools.admin.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".admin.SelectHistoryActivity"
+            android:name="com.easyranktools.easyranktools.admin.EnterNumberActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".admin.CallHistoryActivity"
+            android:name="com.easyranktools.easyranktools.admin.SelectHistoryActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".admin.PacakageActivity"
+            android:name="com.easyranktools.easyranktools.admin.CallHistoryActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".admin.ProfileActivity"
+            android:name="com.easyranktools.easyranktools.admin.PacakageActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.easyranktools.easyranktools.admin.ProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait" /> <!-- Dialer Mode Activity -->
-
-
         <activity
-            android:name=".admin.DashboardActivity"
+            android:name="com.easyranktools.easyranktools.admin.DashboardActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
-
         <receiver
-            android:name=".broadcase.MyCallReceiver"
+            android:name="com.easyranktools.easyranktools.broadcase.MyCallReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -214,26 +212,27 @@
         </receiver>
 
         <service
-            android:name=".service.CallService"
+            android:name="com.easyranktools.easyranktools.service.CallService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_INCALL_SERVICE">
             <meta-data
                 android:name="android.telecom.IN_CALL_SERVICE_UI"
                 android:value="true" />
+
             <intent-filter>
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
         </service>
         <service
-            android:name=".service.MyCallScreeningService"
+            android:name="com.easyranktools.easyranktools.service.MyCallScreeningService"
             android:exported="true"
             android:permission="android.permission.BIND_SCREENING_SERVICE">
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />
             </intent-filter>
         </service>
-        <service android:name=".service.FileDownloadService" />
+        <service android:name="com.easyranktools.easyranktools.service.FileDownloadService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -248,20 +247,14 @@
         <meta-data
             android:name="cashfree_subscription_flow_enable"
             android:value="true" />
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8028241846578443~1962054900" />
 
         <service
-            android:name=".admin.MyFirebaseMessagingService"
+            android:name="com.easyranktools.easyranktools.admin.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-
-
     </application>
 
 </manifest>
